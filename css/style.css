@@ -1,0 +1,517 @@
+/* ==========================================
+   SONG DEDICATION QR JOURNEY - MAIN STYLES
+   Romantic, Dark, Modern Aesthetic
+   ========================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ========== BASE STYLES ========== */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #16213e 100%);
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Background overlay with glassmorphism */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 20% 50%, rgba(255, 105, 180, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 80%, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ========== FLOATING HEARTS ANIMATION ========== */
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.hearts-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.heart {
+  position: absolute;
+  color: #ff69b4;
+  font-size: 1.5rem;
+  animation: float linear infinite;
+  opacity: 0.6;
+  text-shadow: 0 0 10px rgba(255, 105, 180, 0.8);
+}
+
+.heart:nth-child(1) { left: 10%; animation-duration: 8s; animation-delay: 0s; }
+.heart:nth-child(2) { left: 20%; animation-duration: 10s; animation-delay: 1s; }
+.heart:nth-child(3) { left: 30%; animation-duration: 12s; animation-delay: 2s; }
+.heart:nth-child(4) { left: 40%; animation-duration: 9s; animation-delay: 3s; }
+.heart:nth-child(5) { left: 50%; animation-duration: 11s; animation-delay: 4s; }
+.heart:nth-child(6) { left: 60%; animation-duration: 13s; animation-delay: 5s; }
+.heart:nth-child(7) { left: 70%; animation-duration: 10s; animation-delay: 1.5s; }
+.heart:nth-child(8) { left: 80%; animation-duration: 12s; animation-delay: 2.5s; }
+.heart:nth-child(9) { left: 90%; animation-duration: 11s; animation-delay: 3.5s; }
+
+/* ========== PAGE FADE-IN ========== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main {
+  animation: fadeIn 1s ease-out;
+  z-index: 10;
+  position: relative;
+}
+
+/* ========== CARD CONTAINER ========== */
+.card {
+  background: rgba(20, 20, 30, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 105, 180, 0.2);
+  border-radius: 25px;
+  padding: 40px 30px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2),
+              0 0 40px rgba(255, 105, 180, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 48px rgba(138, 43, 226, 0.3),
+              0 0 50px rgba(255, 105, 180, 0.15);
+  border-color: rgba(255, 105, 180, 0.4);
+}
+
+/* ========== PROGRESS INDICATOR ========== */
+.progress-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid rgba(255, 105, 180, 0.3);
+}
+
+.progress-text {
+  font-size: 0.85rem;
+  color: #ff69b4;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.progress-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 105, 180, 0.3);
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  background: #ff69b4;
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* ========== TYPOGRAPHY ========== */
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-align: center;
+  background: linear-gradient(135deg, #ff69b4, #da70d6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  text-align: center;
+  color: #ff69b4;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #b0b0c0;
+  text-align: center;
+  margin-bottom: 30px;
+  font-style: italic;
+}
+
+/* ========== LYRICS SECTION ========== */
+.lyrics-section {
+  margin: 30px 0;
+  padding: 25px;
+  background: rgba(138, 43, 226, 0.05);
+  border-left: 3px solid #ff69b4;
+  border-radius: 10px;
+  line-height: 1.8;
+}
+
+.lyrics {
+  font-size: 1rem;
+  color: #e0e0ff;
+  text-align: center;
+  line-height: 2;
+  font-style: italic;
+  margin-bottom: 15px;
+}
+
+.lyrics p {
+  margin-bottom: 12px;
+}
+
+/* ========== QR SCANNER STYLES ========== */
+#scanner-container {
+  background: rgba(20, 20, 30, 0.6);
+  border: 2px solid #ff69b4;
+  border-radius: 15px;
+  padding: 15px;
+  margin-top: 15px;
+}
+
+#qr-video {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  background: #000;
+}
+
+.qr-scanner-label {
+  font-size: 0.85rem;
+  color: #ff69b4;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: block;
+  text-align: center;
+}
+
+/* ========== TYPEWRITER EFFECT ========== */
+.typewriter {
+  overflow: hidden;
+  border-right: 3px solid #ff69b4;
+  white-space: nowrap;
+  animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+  50% {
+    border-right-color: transparent;
+  }
+}
+
+/* ========== AUDIO PLAYER ========== */
+.player-container {
+  margin: 30px 0;
+  padding: 20px;
+  background: rgba(255, 105, 180, 0.05);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 105, 180, 0.2);
+}
+
+.player-label {
+  font-size: 0.85rem;
+  color: #ff69b4;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: block;
+}
+
+audio {
+  width: 100%;
+  height: 40px;
+  accent-color: #ff69b4;
+  border-radius: 10px;
+}
+
+audio::-webkit-media-controls-panel {
+  background-color: rgba(20, 20, 30, 0.8);
+}
+
+audio::-webkit-media-controls-mute-button,
+audio::-webkit-media-controls-play-button {
+  filter: invert(1);
+}
+
+/* ========== BUTTONS ========== */
+.btn {
+  display: inline-block;
+  padding: 12px 30px;
+  background: linear-gradient(135deg, #ff69b4, #da70d6);
+  color: white;
+  text-decoration: none;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+  letter-spacing: 0.5px;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 25px rgba(255, 105, 180, 0.5);
+}
+
+.btn:active {
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: rgba(255, 105, 180, 0.2);
+  border: 2px solid #ff69b4;
+  color: #ff69b4;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 105, 180, 0.3);
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+/* ========== NEXT PAPER MESSAGE ========== */
+.next-paper {
+  margin-top: 40px;
+  padding: 20px;
+  text-align: center;
+  background: rgba(218, 112, 214, 0.08);
+  border-radius: 15px;
+  border: 1px dashed rgba(255, 105, 180, 0.3);
+  animation: fadeIn 1.5s ease-out 0.5s both;
+}
+
+.next-paper p {
+  font-size: 1.1rem;
+  color: #ff69b4;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.heart-icon {
+  display: inline-block;
+  font-size: 1.5rem;
+  animation: heartbeat 1.2s infinite;
+  margin: 0 5px;
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.2);
+  }
+  50% {
+    transform: scale(1);
+  }
+}
+
+/* ========== INDEX PAGE STYLES ========== */
+.hero {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  color: #b0b0c0;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.papers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 40px;
+}
+
+.paper-btn {
+  padding: 20px;
+  background: rgba(255, 105, 180, 0.1);
+  border: 2px solid #ff69b4;
+  border-radius: 15px;
+  color: #ff69b4;
+  text-decoration: none;
+  text-align: center;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.paper-btn:hover {
+  background: rgba(255, 105, 180, 0.2);
+  transform: scale(1.05);
+}
+
+.paper-num {
+  display: block;
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 768px) {
+  .card {
+    padding: 30px 20px;
+    border-radius: 20px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+  }
+
+  .lyrics {
+    font-size: 0.9rem;
+  }
+
+  .next-paper {
+    margin-top: 30px;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .papers-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 15px;
+  }
+
+  .card {
+    padding: 20px 15px;
+    border-radius: 15px;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+  }
+
+  .lyrics-section {
+    padding: 15px;
+    margin: 20px 0;
+  }
+
+  .lyrics {
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .progress-bar {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+  }
+
+  .progress-text {
+    font-size: 0.75rem;
+  }
+
+  .papers-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========== PRINT STYLES ========== */
+@media print {
+  body::before {
+    display: none;
+  }
+
+  .hearts-container {
+    display: none;
+  }
+
+  .card {
+    box-shadow: none;
+    border-color: #999;
+  }
+}

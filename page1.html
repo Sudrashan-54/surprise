@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper 1 - Song Dedication 🎵</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Floating Hearts Background -->
+  <div class="hearts-container"></div>
+
+  <!-- Main Content -->
+  <main>
+    <div class="card">
+      <!-- Progress Bar -->
+      <div class="progress-bar">
+        <span class="progress-text">PAPER 1 OF 10</span>
+        <div class="progress-dots"></div>
+      </div>
+
+      <!-- Title and Subtitle -->
+      <h1>Paper 1</h1>
+      <h2>Perfect - Ed Sheeran</h2>
+      <p class="subtitle">A beginning of our story</p>
+
+      <!-- Lyrics Section -->
+      <div class="lyrics-section">
+        <div class="lyrics">
+          <p>"I found a love, for me"</p>
+          <p>"Darling, just dive right in"</p>
+          <p>"And follow my lead"</p>
+          <p>"With a full heart and open mind"</p>
+          <p>"A foolish man's waiting"</p>
+          <p>"For a moment that comes every second..."</p>
+        </div>
+      </div>
+
+      <!-- Audio Player -->
+      <div class="player-container">
+        <label class="player-label">🎧 Listen To The Song</label>
+        <audio controls>
+          <source src="songs/song1.mp3" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+
+      <!-- Scanner Section -->
+      <div class="next-paper">
+        <p>Scan the next QR code <span class="heart-icon">❤️</span></p>
+        <p style="font-size: 0.95rem; color: #b0b0c0; margin-bottom: 15px;">Point your camera at the next paper's QR code</p>
+        <div class="button-group">
+          <button class="btn" onclick="toggleScanner()">📱 Open Scanner</button>
+          <a href="index.html" class="btn btn-secondary">Back Home</a>
+        </div>
+        <div id="scanner-container" style="display: none; margin-top: 20px;">
+          <video id="qr-video" style="width: 100%; border-radius: 10px; margin-bottom: 10px;"></video>
+          <button class="btn btn-secondary" onclick="toggleScanner()" style="width: 100%;">Close Scanner</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="js/script.js"></script>
+</body>
+</html>

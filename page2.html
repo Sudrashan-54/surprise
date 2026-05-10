@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper 2 - Song Dedication 🎵</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Floating Hearts Background -->
+  <div class="hearts-container"></div>
+
+  <!-- Main Content -->
+  <main>
+    <div class="card">
+      <!-- Progress Bar -->
+      <div class="progress-bar">
+        <span class="progress-text">PAPER 2 OF 10</span>
+        <div class="progress-dots"></div>
+      </div>
+
+      <!-- Title and Subtitle -->
+      <h1>Paper 2</h1>
+      <h2>All of Me - John Legend</h2>
+      <p class="subtitle">When love is pure and unconditional</p>
+
+      <!-- Lyrics Section -->
+      <div class="lyrics-section">
+        <div class="lyrics">
+          <p>"What would I do without your smart mouth"</p>
+          <p>"Drawing me in, and you kicking me out"</p>
+          <p>"You've got this love and I got a hand for it"</p>
+          <p>"And when I mastered the skill of letting you down"</p>
+          <p>"All of me wants all of you..."</p>
+        </div>
+
+        <div class="personal-message">
+          💌 <strong>Your Personal Message:</strong><br><br>
+          Every part of me loves every part of you. Thank you for accepting all of me - my flaws, my dreams, my weird habits. You make me want to be a better person every single day. 💕
+        </div>
+      </div>
+
+      <!-- Audio Player -->
+      <div class="player-container">
+        <label class="player-label">🎧 Listen To The Song</label>
+        <audio controls>
+          <source src="songs/song2.mp3" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+
+      <!-- Scanner Section -->
+      <div class="next-paper">
+        <p>Scan the next QR code <span class="heart-icon">❤️</span></p>
+        <p style="font-size: 0.95rem; color: #b0b0c0; margin-bottom: 15px;">Point your camera at the next paper's QR code</p>
+        <div class="button-group">
+          <button class="btn" onclick="toggleScanner()">📱 Open Scanner</button>
+          <button class="btn btn-secondary" onclick="goToPreviousPage(2)">← Previous Paper</button>
+        </div>
+        <div id="scanner-container" style="display: none; margin-top: 20px;">
+          <video id="qr-video" style="width: 100%; border-radius: 10px; margin-bottom: 10px;"></video>
+          <button class="btn btn-secondary" onclick="toggleScanner()" style="width: 100%;">Close Scanner</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="js/script.js"></script>
+</body>
+</html>

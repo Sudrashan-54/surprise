@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paper 10 - The Final Song 🎵</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="hearts-container"></div>
+  <main>
+    <div class="card">
+      <div class="progress-bar">
+        <span class="progress-text">PAPER 10 OF 10</span>
+        <div class="progress-dots"></div>
+      </div>
+      <h1>Paper 10</h1>
+      <h2>All My Life - K-Ci & JoJo</h2>
+      <p class="subtitle">Our happily ever after</p>
+      <div class="lyrics-section">
+        <div class="lyrics">
+          <p>"All my life I prayed for someone like you"</p>
+          <p>"And I thank God that I have found you"</p>
+          <p>"All my life I've been searching for you"</p>
+          <p>"I've been searching for someone new"</p>
+          <p>"All my life..."</p>
+        </div>
+
+      </div>
+      <div class="player-container">
+        <label class="player-label">🎧 Listen To The Song</label>
+        <audio controls>
+          <source src="songs/song10.mp3" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+      <div class="next-paper">
+        <p>🎉 You've Completed The Journey! 🎉 <span class="heart-icon">❤️</span></p>
+        <p style="font-size: 0.95rem; color: #b0b0c0; margin: 15px 0;">Thank you for experiencing our love story through music. Let's create many more memories together.</p>
+        <div class="button-group">
+          <a href="index.html" class="btn">Start Over From Beginning</a>
+          <button class="btn btn-secondary" onclick="goToPreviousPage(10)">← Previous Paper</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="js/script.js"></script>
+</body>
+</html>
