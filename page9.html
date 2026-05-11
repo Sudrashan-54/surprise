@@ -1,52 +1,494 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Paper 9 - Song Dedication 🎵</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Paper 1 — A Song For You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
+
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #e8e8f0;
+      --surface:   #eaeaf2;
+      --shadow-d:  #c4c4d4;
+      --shadow-l:  #ffffff;
+      --text-dark: #2a2a3a;
+      --text-mid:  #60607a;
+      --text-soft: #8888a0;
+      --accent:    #9090b8;
+      --accent-dk: #3a3a5a;
+      --pink:      #e8a0a8;
+      --cat-body:  #d4b896;
+      --cat-ear:   #f0c0b8;
+      --cat-dark:  #2a2218;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    /* ── Card Shell ── */
+    .card {
+      background: var(--surface);
+      border-radius: 28px;
+      padding: 28px 22px 24px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 8px 8px 18px var(--shadow-d), -8px -8px 18px var(--shadow-l);
+    }
+
+    /* ── Subtitle ── */
+    .song-sub {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-soft);
+      margin-bottom: 36px;
+      font-style: italic;
+      font-family: 'DM Serif Display', serif;
+    }
+
+    /* ── Lyrics + Peeking Cat ── */
+    .lyrics-wrap {
+      position: relative;
+      margin-bottom: 22px;
+      padding-top: 40px;
+    }
+
+    /* Cat SVG sits above the lyrics box */
+    .cat-peek {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 48px;
+      z-index: 2;
+      animation: peekbob 3.2s ease-in-out infinite;
+      transform-origin: bottom center;
+    }
+
+    @keyframes peekbob {
+      0%, 100% { transform: translateX(-50%) translateY(0px); }
+      50%       { transform: translateX(-50%) translateY(-6px); }
+    }
+
+    .eye-l, .eye-r {
+      animation: blink 5s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .eye-r { animation-delay: 0.07s; }
+    @keyframes blink {
+      0%, 86%, 100% { transform: scaleY(1); }
+      90%           { transform: scaleY(0.08); }
+    }
+
+    .ear-l { animation: eartwitch 6s ease-in-out infinite; transform-box: fill-box; transform-origin: bottom center; }
+    .ear-r { animation: eartwitch 6s ease-in-out infinite 0.5s; transform-box: fill-box; transform-origin: bottom center; }
+    @keyframes eartwitch {
+      0%, 78%, 100% { transform: rotate(0deg); }
+      83%           { transform: rotate(-12deg); }
+      92%           { transform: rotate(7deg); }
+    }
+
+    /* mask bottom of cat so it looks like it's hiding behind the box */
+    .cat-mask {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 14px;
+      background: var(--surface);
+      z-index: 3;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .lyrics-box {
+      background: var(--surface);
+      border-radius: 18px;
+      padding: 20px 20px 18px;
+      box-shadow: inset 4px 4px 10px var(--shadow-d), inset -4px -4px 10px var(--shadow-l);
+      position: relative;
+      z-index: 1;
+    }
+
+    .lyrics-box p {
+      font-size: 14px;
+      color: var(--text-mid);
+      line-height: 2;
+      font-style: italic;
+      font-family: 'DM Serif Display', serif;
+    }
+
+    /* ── Audio Player ── */
+    .player-box {
+      background: var(--surface);
+      border-radius: 18px;
+      padding: 16px 18px;
+      box-shadow: 5px 5px 12px var(--shadow-d), -5px -5px 12px var(--shadow-l);
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .play-btn {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: none;
+      box-shadow: 4px 4px 10px var(--shadow-d), -4px -4px 10px var(--shadow-l);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--accent-dk);
+      transition: box-shadow 0.12s, transform 0.1s;
+    }
+    .play-btn:active {
+      box-shadow: inset 3px 3px 8px var(--shadow-d), inset -3px -3px 8px var(--shadow-l);
+      transform: scale(0.96);
+    }
+
+    .play-icon { width: 22px; height: 22px; fill: var(--accent-dk); pointer-events: none; }
+
+    .progress-wrap { width: 100%; }
+    .progress-track {
+      width: 100%;
+      height: 3px;
+      background: #d0d0e0;
+      border-radius: 2px;
+      cursor: pointer;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.3s linear;
+      pointer-events: none;
+    }
+    .time-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-top: 6px;
+    }
+
+    /* hidden real audio element */
+    #audio { display: none; }
+
+    /* ── Scanner ── */
+    .scan-section { text-align: center; }
+
+    .scan-label {
+      font-size: 13px;
+      color: var(--text-mid);
+      margin-bottom: 14px;
+      line-height: 1.6;
+    }
+
+    .neu-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      background: var(--surface);
+      box-shadow: 5px 5px 12px var(--shadow-d), -5px -5px 12px var(--shadow-l);
+      font-size: 13px;
+      color: var(--accent-dk);
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'DM Sans', sans-serif;
+      transition: box-shadow 0.12s, transform 0.1s;
+    }
+    .neu-btn:active {
+      box-shadow: inset 3px 3px 8px var(--shadow-d), inset -3px -3px 8px var(--shadow-l);
+      transform: scale(0.98);
+    }
+
+    /* Scanner view */
+    .scanner-wrap {
+      display: none;
+      margin-top: 16px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: inset 4px 4px 10px var(--shadow-d), inset -4px -4px 10px var(--shadow-l);
+      position: relative;
+    }
+    .scanner-wrap.open { display: block; }
+
+    #qr-video {
+      width: 100%;
+      display: block;
+      border-radius: 16px;
+    }
+
+    .scanner-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .scanner-frame {
+      width: 140px;
+      height: 140px;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      box-shadow: 0 0 0 4000px rgba(234,234,242,0.45);
+    }
+
+    .close-btn {
+      margin-top: 10px;
+      background: var(--surface);
+      color: var(--text-soft);
+      font-size: 12px;
+    }
+
+    .scan-result {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--accent-dk);
+      text-align: center;
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <div class="hearts-container"></div>
-  <main>
-    <div class="card">
-      <div class="progress-bar">
-        <span class="progress-text">PAPER 9 OF 10</span>
-        <div class="progress-dots"></div>
-      </div>
-      <h1>Paper 9</h1>
-      <h2>I Will Always Love You - Whitney Houston</h2>
-      <p class="subtitle">A love that lasts forever</p>
-      <div class="lyrics-section">
-        <div class="lyrics">
-          <p>"If I should stay, I would only be in your way"</p>
-          <p>"So I'll go, but I know I'll think of you each step of the way"</p>
-          <p>"And I will always love you, I will always love you"</p>
-          <p>"You, my darling, you..."</p>
-        </div>
 
+<div class="card">
+
+  <p class="song-sub">a beginning of our story</p>
+
+  <!-- Lyrics + peeking cat -->
+  <div class="lyrics-wrap">
+
+    <svg class="cat-peek" viewBox="0 0 80 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- ears -->
+      <g class="ear-l">
+        <polygon points="13,30 5,8 24,22" fill="#d4b896"/>
+        <polygon points="14,28 9,14 21,22" fill="#f0c0b8"/>
+      </g>
+      <g class="ear-r">
+        <polygon points="67,30 75,8 56,22" fill="#d4b896"/>
+        <polygon points="66,28 71,14 59,22" fill="#f0c0b8"/>
+      </g>
+      <!-- head -->
+      <ellipse cx="40" cy="38" rx="32" ry="22" fill="#d4b896"/>
+      <!-- eyes -->
+      <g class="eye-l" style="transform-origin:28px 34px;">
+        <ellipse cx="28" cy="34" rx="5.5" ry="6" fill="#2a2218"/>
+        <ellipse cx="29.5" cy="32.2" rx="1.8" ry="1.8" fill="white"/>
+      </g>
+      <g class="eye-r" style="transform-origin:52px 34px;">
+        <ellipse cx="52" cy="34" rx="5.5" ry="6" fill="#2a2218"/>
+        <ellipse cx="53.5" cy="32.2" rx="1.8" ry="1.8" fill="white"/>
+      </g>
+      <!-- nose -->
+      <ellipse cx="40" cy="43" rx="4" ry="2.5" fill="#e8a0a8"/>
+      <!-- whiskers -->
+      <line x1="22" y1="41" x2="10" y2="38.5" stroke="#9a8060" stroke-width="0.8"/>
+      <line x1="22" y1="43.5" x2="9"  y2="44"   stroke="#9a8060" stroke-width="0.8"/>
+      <line x1="58" y1="41" x2="70" y2="38.5" stroke="#9a8060" stroke-width="0.8"/>
+      <line x1="58" y1="43.5" x2="71" y2="44"   stroke="#9a8060" stroke-width="0.8"/>
+      <!-- smile -->
+      <path d="M36 45.5 Q40 48.5 44 45.5" stroke="#9a8060" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+      <!-- mask strip: hides bottom so cat looks like it's peeking over edge -->
+      <rect x="0" y="42" width="80" height="10" fill="#eaeaf2"/>
+    </svg>
+
+    <div class="lyrics-box">
+      <p>"I found a love, for me</p>
+      <p>Darling, just dive right in</p>
+      <p>And follow my lead</p>
+      <p>With a full heart and open mind"</p>
+    </div>
+  </div>
+
+  <!-- Audio player -->
+  <audio id="audio" src="songs/song1.mp3" preload="metadata"></audio>
+
+  <div class="player-box">
+    <button class="play-btn" id="playBtn" aria-label="Play / Pause">
+      <svg class="play-icon" id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <div class="progress-wrap">
+      <div class="progress-track" id="progressTrack">
+        <div class="progress-fill" id="progressFill"></div>
       </div>
-      <div class="player-container">
-        <label class="player-label">🎧 Listen To The Song</label>
-        <audio controls>
-          <source src="songs/song9.mp3" type="audio/mpeg">
-          Your browser does not support the audio element.
-        </audio>
-      </div>
-      <div class="next-paper">
-        <p>Scan the final QR code <span class="heart-icon">❤️</span></p>
-        <p style="font-size: 0.95rem; color: #b0b0c0; margin-bottom: 15px;">Point your camera at the next paper's QR code</p>
-        <div class="button-group">
-          <button class="btn" onclick="toggleScanner()">📱 Open Scanner</button>
-          <button class="btn btn-secondary" onclick="goToPreviousPage(9)">← Previous Paper</button>
-        </div>
-        <div id="scanner-container" style="display: none; margin-top: 20px;">
-          <video id="qr-video" style="width: 100%; border-radius: 10px; margin-bottom: 10px;"></video>
-          <button class="btn btn-secondary" onclick="toggleScanner()" style="width: 100%;">Close Scanner</button>
-        </div>
+      <div class="time-row">
+        <span id="currentTime">0:00</span>
+        <span id="duration">—</span>
       </div>
     </div>
-  </main>
-  <script src="js/script.js"></script>
+  </div>
+
+  <!-- Scanner section -->
+  <div class="scan-section">
+    <p class="scan-label">Scan the next paper to continue ❤️</p>
+    <button class="neu-btn" id="scanBtn" onclick="toggleScanner()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="5" height="5"/><rect x="16" y="3" width="5" height="5"/>
+        <rect x="3" y="16" width="5" height="5"/><line x1="21" y1="16" x2="21" y2="21"/>
+        <line x1="16" y1="21" x2="21" y2="21"/><line x1="11" y1="3" x2="11" y2="8"/>
+        <line x1="8" y1="11" x2="3" y2="11"/><line x1="16" y1="11" x2="21" y2="11"/>
+        <line x1="11" y1="16" x2="11" y2="21"/>
+      </svg>
+      Scan next
+    </button>
+
+    <div class="scanner-wrap" id="scannerWrap">
+      <video id="qr-video" playsinline autoplay muted></video>
+      <div class="scanner-overlay"><div class="scanner-frame"></div></div>
+    </div>
+
+    <button class="neu-btn close-btn" id="closeBtn" onclick="toggleScanner()" style="display:none; margin-top:10px;">
+      ✕ Close scanner
+    </button>
+
+    <p class="scan-result" id="scanResult"></p>
+  </div>
+
+</div>
+
+<script>
+  /* ── Audio Player ── */
+  const audio        = document.getElementById('audio');
+  const playBtn      = document.getElementById('playBtn');
+  const playIcon     = document.getElementById('playIcon');
+  const progressFill = document.getElementById('progressFill');
+  const progressTrack= document.getElementById('progressTrack');
+  const currentTimeEl= document.getElementById('currentTime');
+  const durationEl   = document.getElementById('duration');
+
+  const PLAY_PATH  = 'M8 5v14l11-7z';
+  const PAUSE_PATH = 'M6 19h4V5H6zm8-14v14h4V5z';
+
+  function fmt(s) {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60).toString().padStart(2, '0');
+    return `${m}:${sec}`;
+  }
+
+  audio.addEventListener('loadedmetadata', () => {
+    durationEl.textContent = fmt(audio.duration);
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    if (!audio.duration) return;
+    const pct = (audio.currentTime / audio.duration) * 100;
+    progressFill.style.width = pct + '%';
+    currentTimeEl.textContent = fmt(audio.currentTime);
+  });
+
+  audio.addEventListener('ended', () => {
+    playIcon.querySelector('path') && (playIcon.innerHTML = `<path d="${PLAY_PATH}"/>`);
+  });
+
+  playBtn.addEventListener('click', () => {
+    if (audio.paused) {
+      audio.play();
+      playIcon.innerHTML = `<path d="${PAUSE_PATH}"/>`;
+    } else {
+      audio.pause();
+      playIcon.innerHTML = `<path d="${PLAY_PATH}"/>`;
+    }
+  });
+
+  progressTrack.addEventListener('click', e => {
+    const rect = progressTrack.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = ratio * audio.duration;
+  });
+
+  /* ── QR Scanner ── */
+  const scannerWrap = document.getElementById('scannerWrap');
+  const closeBtn    = document.getElementById('closeBtn');
+  const scanResult  = document.getElementById('scanResult');
+  const video       = document.getElementById('qr-video');
+  let stream        = null;
+  let scanning      = false;
+  let animFrame     = null;
+
+  function toggleScanner() {
+    if (!scanning) {
+      openScanner();
+    } else {
+      closeScanner();
+    }
+  }
+
+  async function openScanner() {
+    scanning = true;
+    scannerWrap.classList.add('open');
+    closeBtn.style.display = 'flex';
+    scanResult.style.display = 'none';
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' }
+      });
+      video.srcObject = stream;
+      video.play();
+      requestAnimationFrame(scanFrame);
+    } catch (err) {
+      scanResult.textContent = '⚠️ Camera access denied.';
+      scanResult.style.display = 'block';
+      closeScanner();
+    }
+  }
+
+  function closeScanner() {
+    scanning = false;
+    scannerWrap.classList.remove('open');
+    closeBtn.style.display = 'none';
+    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+    if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+    video.srcObject = null;
+  }
+
+  function scanFrame() {
+    if (!scanning) return;
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+      const canvas = document.createElement('canvas');
+      canvas.width  = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height);
+      if (code) {
+        closeScanner();
+        scanResult.textContent = '✓ Found! Redirecting…';
+        scanResult.style.display = 'block';
+        setTimeout(() => { window.location.href = code.data; }, 800);
+        return;
+      }
+    }
+    animFrame = requestAnimationFrame(scanFrame);
+  }
+</script>
+
 </body>
 </html>
