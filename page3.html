@@ -1,603 +1,652 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lyrics Audio Scanner UI</title>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lyrics Audio Scanner</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Noto+Serif+Tamil:wght@400;500&display=swap" rel="stylesheet">
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Noto+Serif+Tamil:wght@400;500&display=swap" rel="stylesheet">
-
-  <style>
-
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-    }
-
-    body{
-      background:#ececf3;
-      min-height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      font-family:'Poppins',sans-serif;
-    }
-
-    .mobile{
-      width:390px;
-      height:844px;
-      background:#f0f0f5;
-      padding:24px;
-      overflow:auto;
-    }
-
-    /* LYRICS */
-
-    .lyrics-box{
-      background:#6f0000;
-      color:#fff;
-      border-radius:28px;
-      padding:38px 28px;
-      line-height:1.4;
-      font-size:29px;
-      font-family:'Noto Serif Tamil', serif;
-      box-shadow:0 10px 30px rgba(0,0,0,0.12);
-      margin-bottom:28px;
-    }
-
-    /* AUDIO CARD */
-
-    .audio-card{
-      width:100%;
-      display:flex;
-      align-items:center;
-      gap:14px;
-
-      padding:16px;
-      border-radius:28px;
-
-      background:
-      linear-gradient(145deg,#fff,#fff5f7);
-
-      border:1px solid rgba(217,28,60,0.12);
-
-      box-shadow:
-      0 8px 28px rgba(217,28,60,0.08),
-      inset 0 1px 0 rgba(255,255,255,0.8);
-
-      overflow:hidden;
-      position:relative;
-
-      margin-bottom:28px;
-    }
-
-    .audio-card::before{
-      content:'';
-      position:absolute;
-      inset:0;
-
-      background:
-      radial-gradient(circle at top right,
-      rgba(217,28,60,0.05),
-      transparent 45%);
-
-      pointer-events:none;
-    }
-
-    /* PLAY BUTTON */
-
-    .play-btn{
-      width:58px;
-      height:58px;
-      border:none;
-      border-radius:50%;
-
-      flex-shrink:0;
-
-      background:
-      linear-gradient(
-      135deg,
-      #D91C3C,
-      #A81030
-      );
-
-      display:flex;
-      justify-content:center;
-      align-items:center;
-
-      cursor:pointer;
-
-      box-shadow:
-      0 10px 24px rgba(217,28,60,0.35);
-
-      transition:.3s ease;
-    }
-
-    .play-btn:hover{
-      transform:scale(1.06);
-    }
-
-    .play-btn:active{
-      transform:scale(.92);
-    }
-
-    .play-btn .icon{
-      width:0;
-      height:0;
-
-      border-style:solid;
-      border-width:9px 0 9px 14px;
-
-      border-color:
-      transparent
-      transparent
-      transparent
-      white;
-
-      margin-left:4px;
-    }
-
-    .play-btn.playing .icon{
-      border:none;
-
-      width:14px;
-      height:15px;
-
-      background:
-      linear-gradient(
-      to right,
-      white 4px,
-      transparent 4px,
-      transparent 9px,
-      white 9px
-      );
-
-      margin-left:0;
-    }
-
-    /* CONTENT */
-
-    .audio-content{
-      flex:1;
-    }
-
-    /* SONG INFO */
-
-    .song-info{
-      display:flex;
-      flex-direction:column;
-      margin-bottom:10px;
-    }
-
-    .song-name{
-      font-size:14px;
-      font-weight:600;
-      color:#2b0208;
-    }
-
-    .artist-name{
-      font-size:11px;
-      color:rgba(217,28,60,0.6);
-      letter-spacing:.1em;
-    }
-
-    /* WAVEFORM */
-
-    .wave{
-      display:flex;
-      align-items:flex-end;
-      gap:3px;
-      height:34px;
-      margin-bottom:12px;
-    }
-
-    .bar{
-      width:4px;
-      border-radius:20px;
-
-      background:
-      rgba(217,28,60,0.25);
-
-      animation:idle 1.5s ease infinite;
-    }
-
-    .bar:nth-child(1){height:25%;}
-    .bar:nth-child(2){height:70%;}
-    .bar:nth-child(3){height:40%;}
-    .bar:nth-child(4){height:85%;}
-    .bar:nth-child(5){height:45%;}
-    .bar:nth-child(6){height:65%;}
-    .bar:nth-child(7){height:28%;}
-    .bar:nth-child(8){height:80%;}
-    .bar:nth-child(9){height:50%;}
-    .bar:nth-child(10){height:90%;}
-    .bar:nth-child(11){height:35%;}
-    .bar:nth-child(12){height:75%;}
-
-    @keyframes idle{
-
-      0%,100%{
-        opacity:.35;
-        transform:scaleY(1);
+    <style>
+      *, *::before, *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
 
-      50%{
-        opacity:.6;
-        transform:scaleY(.8);
-      }
-    }
-
-    .playing .bar{
-      animation:dance .5s ease infinite alternate;
-      background:#D91C3C;
-    }
-
-    @keyframes dance{
-
-      from{
-        transform:scaleY(.35);
-        opacity:.5;
+      body {
+        background: #d8d8e4;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Poppins', sans-serif;
       }
 
-      to{
-        transform:scaleY(1);
-        opacity:1;
+      /* ── SHELL ── */
+      .mobile-shell {
+        width: 390px;
+        min-height: 844px;
+        background: #e8e8f0;
+        border-radius: 48px;
+        padding: 36px 22px 32px;
+        overflow: hidden;
+        position: relative;
+        box-shadow:
+          20px 20px 60px rgba(0,0,0,0.18),
+          -8px -8px 24px rgba(255,255,255,0.55);
       }
-    }
 
-    /* PROGRESS */
-
-    .progress-wrap{
-      width:100%;
-      height:4px;
-      border-radius:20px;
-
-      overflow:hidden;
-
-      background:
-      rgba(217,28,60,0.12);
-
-      margin-bottom:10px;
-    }
-
-    .progress{
-      width:0%;
-      height:100%;
-
-      border-radius:20px;
-
-      background:
-      linear-gradient(
-      90deg,
-      #D91C3C,
-      #FF4060
-      );
-
-      transition:.2s linear;
-    }
-
-    /* TIME */
-
-    .time-row{
-      display:flex;
-      justify-content:space-between;
-    }
-
-    .time{
-      font-size:10px;
-      letter-spacing:.08em;
-      color:rgba(217,28,60,0.55);
-    }
-
-    /* SCAN */
-
-    .scan-text{
-      font-size:17px;
-      color:#4d4d73;
-      margin-bottom:20px;
-      padding-left:8px;
-    }
-
-    .scan-btn{
-      width:100%;
-      height:66px;
-      border:none;
-      border-radius:22px;
-      background:#ececf3;
-
-      box-shadow:
-      8px 8px 18px rgba(0,0,0,0.08),
-      -8px -8px 18px rgba(255,255,255,0.9);
-
-      font-size:17px;
-      color:#27304f;
-
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      gap:12px;
-
-      cursor:pointer;
-      font-weight:500;
-    }
-
-    /* SCANNER */
-
-    .scanner{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,0.85);
-
-      display:none;
-      justify-content:center;
-      align-items:center;
-      flex-direction:column;
-
-      z-index:99;
-    }
-
-    .scanner-box{
-      width:240px;
-      height:240px;
-      border:4px solid #00ff9d;
-      border-radius:18px;
-
-      position:relative;
-      overflow:hidden;
-    }
-
-    .line{
-      position:absolute;
-      width:100%;
-      height:4px;
-
-      background:#00ff9d;
-      box-shadow:0 0 12px #00ff9d;
-
-      animation:scan 2s linear infinite;
-    }
-
-    @keyframes scan{
-      from{
-        top:0;
+      /* ── TOP BAR ── */
+      .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
       }
-      to{
-        top:100%;
+      .top-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: .14em;
+        color: #7a7a9d;
+        text-transform: uppercase;
       }
-    }
+      .top-badge {
+        background: #6f0000;
+        color: #ffd6d6;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 20px;
+        letter-spacing: .07em;
+      }
 
-    .close{
-      margin-top:28px;
-      padding:12px 30px;
-      border:none;
-      border-radius:40px;
-      font-size:16px;
-      cursor:pointer;
-    }
+      /* ── LYRICS BOX ── */
+      .lyrics-box {
+        background: linear-gradient(145deg, #8b0000 0%, #5a0000 100%);
+        color: #fff;
+        border-radius: 26px;
+        padding: 30px 26px 26px;
+        line-height: 1.55;
+        font-size: 21px;
+        font-family: 'Noto Serif Tamil', serif;
+        margin-bottom: 18px;
+        position: relative;
+        overflow: hidden;
+      }
+      .lyrics-box::before {
+        content: '';
+        position: absolute;
+        top: -40px; right: -40px;
+        width: 140px; height: 140px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.05);
+      }
+      .lyrics-box::after {
+        content: '';
+        position: absolute;
+        bottom: -25px; left: 10px;
+        width: 100px; height: 100px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.04);
+      }
+      .lyrics-quote {
+        position: absolute;
+        top: 10px; left: 18px;
+        font-size: 64px;
+        font-family: Georgia, serif;
+        color: rgba(255,255,255,0.07);
+        line-height: 1;
+        user-select: none;
+      }
+      .lyrics-text {
+        position: relative;
+        z-index: 1;
+      }
 
-  </style>
-</head>
+      /* ── AUDIO CARD ── */
+      .audio-card {
+        background: #fff;
+        border-radius: 24px;
+        padding: 18px 16px 16px;
+        margin-bottom: 18px;
+        border: 0.5px solid rgba(111,0,0,0.1);
+        box-shadow: 0 4px 20px rgba(111,0,0,0.06);
+      }
 
-<body>
+      /* Song info */
+      .song-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .album-art {
+        width: 46px; height: 46px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #8b0000, #d91c3c);
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+      }
+      .album-art svg {
+        width: 20px; height: 20px;
+        fill: rgba(255,255,255,0.9);
+      }
+      .song-meta { flex: 1; }
+      .song-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1a0010;
+        margin: 0 0 2px;
+      }
+      .artist-name {
+        font-size: 11px;
+        color: #c94060;
+        letter-spacing: .06em;
+        margin: 0;
+      }
 
-  <div class="mobile">
+      /* Controls */
+      .controls-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .play-btn {
+        width: 48px; height: 48px;
+        border: none;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #d91c3c, #a81030);
+        display: flex; justify-content: center; align-items: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        box-shadow: 0 6px 18px rgba(217,28,60,0.35);
+        transition: transform .2s, box-shadow .2s;
+      }
+      .play-btn:hover {
+        transform: scale(1.08);
+        box-shadow: 0 8px 24px rgba(217,28,60,0.45);
+      }
+      .play-btn:active {
+        transform: scale(.92);
+        box-shadow: 0 3px 10px rgba(217,28,60,0.3);
+      }
+      .play-btn svg { fill: white; }
 
-    <!-- LYRICS -->
+      /* Waveform */
+      .wave {
+        display: flex;
+        align-items: flex-end;
+        gap: 3px;
+        height: 34px;
+        flex: 1;
+      }
+      .bar {
+        flex: 1;
+        border-radius: 10px;
+        background: rgba(217,28,60,0.2);
+        animation: idle 1.8s ease infinite;
+        transform-origin: bottom;
+      }
+      .bar:nth-child(1)  { height:30%; animation-delay: 0s; }
+      .bar:nth-child(2)  { height:65%; animation-delay: .1s; }
+      .bar:nth-child(3)  { height:45%; animation-delay: .2s; }
+      .bar:nth-child(4)  { height:90%; animation-delay: .05s; }
+      .bar:nth-child(5)  { height:50%; animation-delay: .15s; }
+      .bar:nth-child(6)  { height:72%; animation-delay: .25s; }
+      .bar:nth-child(7)  { height:30%; animation-delay: .08s; }
+      .bar:nth-child(8)  { height:85%; animation-delay: .18s; }
+      .bar:nth-child(9)  { height:55%; animation-delay: .3s; }
+      .bar:nth-child(10) { height:95%; animation-delay: .12s; }
+      .bar:nth-child(11) { height:38%; animation-delay: .22s; }
+      .bar:nth-child(12) { height:78%; animation-delay: .06s; }
+      .bar:nth-child(13) { height:42%; animation-delay: .16s; }
+      .bar:nth-child(14) { height:62%; animation-delay: .26s; }
 
-    <div class="lyrics-box">
-      Oppanaigal edhumatra <br>
-      உந்தன் இயல்பும் <br>
-      karpanaiyil aazhthugindra <br>
-      kallacchirippum <br>
-      இன்னும் வேண்டும் சொல்லும் <br>
-      குட்டி kurumbum <br>
-      காலம் ulla kaalam varai <br>
-      nenjil இனிக்கும்.!! 💗
-    </div>
+      @keyframes idle {
+        0%,100% { opacity:.3; transform:scaleY(1); }
+        50%      { opacity:.5; transform:scaleY(.65); }
+      }
 
-    <!-- AUDIO CARD -->
+      .wave.playing .bar {
+        animation: dance .45s ease infinite alternate;
+        background: #d91c3c;
+      }
+      @keyframes dance {
+        from { transform:scaleY(.3); opacity:.6; }
+        to   { transform:scaleY(1); opacity:1; }
+      }
 
-    <div class="audio-card">
+      /* Progress */
+      .progress-wrap {
+        width: 100%;
+        height: 4px;
+        border-radius: 20px;
+        background: rgba(217,28,60,0.12);
+        margin-bottom: 8px;
+        cursor: pointer;
+        position: relative;
+      }
+      .progress-wrap:hover .progress-thumb { opacity: 1; }
+      .progress {
+        height: 100%;
+        border-radius: 20px;
+        background: linear-gradient(90deg, #d91c3c, #ff6080);
+        width: 0%;
+        transition: width .2s linear;
+        position: relative;
+      }
+      .progress-thumb {
+        position: absolute;
+        right: -6px; top: -4px;
+        width: 12px; height: 12px;
+        border-radius: 50%;
+        background: #d91c3c;
+        opacity: 0;
+        transition: opacity .2s;
+      }
 
-      <button class="play-btn" onclick="togglePlay(this)">
-        <span class="icon"></span>
-      </button>
+      .time-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+        letter-spacing: .06em;
+        color: rgba(217,28,60,0.5);
+      }
 
-      <div class="audio-content">
+      /* ── SCAN SECTION ── */
+      .scan-section { margin-top: 2px; }
 
-       
+      .scan-label {
+        font-size: 13px;
+        color: #5c5c80;
+        margin-bottom: 12px;
+        padding-left: 4px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .scan-label svg { width: 15px; height: 15px; flex-shrink: 0; }
 
-        <div class="wave waveform">
+      .scan-btn {
+        width: 100%;
+        height: 62px;
+        border: none;
+        border-radius: 20px;
+        background: #e8e8f0;
+        box-shadow:
+          7px 7px 16px rgba(0,0,0,0.08),
+          -7px -7px 16px rgba(255,255,255,0.85);
+        font-size: 15px;
+        font-weight: 500;
+        color: #27304f;
+        font-family: 'Poppins', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: box-shadow .2s, transform .15s;
+      }
+      .scan-btn:hover {
+        box-shadow:
+          9px 9px 20px rgba(0,0,0,0.1),
+          -9px -9px 20px rgba(255,255,255,0.9);
+      }
+      .scan-btn:active {
+        box-shadow:
+          2px 2px 6px rgba(0,0,0,0.07),
+          -2px -2px 6px rgba(255,255,255,0.7);
+        transform: scale(.98);
+      }
+      .scan-btn svg { width: 20px; height: 20px; }
 
-          <audio>
-            <source src="./songs/oppanaikal.mpeg" type="audio/mp3">
-          </audio>
+      /* ── SCANNER OVERLAY ── */
+      .scanner-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(5,5,12,0.92);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        z-index: 20;
+        border-radius: 48px;
+        animation: fadeIn .25s ease;
+      }
+      .scanner-overlay.open { display: flex; }
 
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
-          <div class="bar"></div>
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
 
+      .scan-overlay-title {
+        color: rgba(255,255,255,0.55);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: .18em;
+        text-transform: uppercase;
+        margin-bottom: 28px;
+      }
+
+      .scanner-box {
+        width: 220px; height: 220px;
+        border-radius: 18px;
+        position: relative;
+        margin-bottom: 20px;
+      }
+
+      /* Corner brackets */
+      .corner {
+        position: absolute;
+        width: 24px; height: 24px;
+        border-color: #00ffaa;
+        border-style: solid;
+        transition: width .3s, height .3s;
+      }
+      .corner.tl { top:0; left:0;   border-width: 3px 0 0 3px; border-radius: 6px 0 0 0; }
+      .corner.tr { top:0; right:0;  border-width: 3px 3px 0 0; border-radius: 0 6px 0 0; }
+      .corner.bl { bottom:0; left:0;  border-width: 0 0 3px 3px; border-radius: 0 0 0 6px; }
+      .corner.br { bottom:0; right:0; border-width: 0 3px 3px 0; border-radius: 0 0 6px 0; }
+
+      .scan-inner {
+        position: absolute;
+        inset: 0;
+        border-radius: 14px;
+        overflow: hidden;
+        background: rgba(255,255,255,0.015);
+      }
+
+      .scan-line {
+        position: absolute;
+        left: 0; right: 0;
+        height: 2px;
+        background: #00ffaa;
+        box-shadow: 0 0 10px #00ffaa, 0 0 30px rgba(0,255,170,0.35);
+        animation: scanline 2.2s ease-in-out infinite;
+      }
+      .scan-line::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        top: -20px;
+        height: 22px;
+        background: linear-gradient(to top, rgba(0,255,170,0.08), transparent);
+      }
+      @keyframes scanline {
+        0%   { top: 0%;   opacity:1; }
+        88%  { top: 100%; opacity:1; }
+        100% { top: 100%; opacity:0; }
+      }
+
+      .scan-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(0,255,170,0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0,255,170,0.03) 1px, transparent 1px);
+        background-size: 22px 22px;
+      }
+
+      .scan-hint {
+        color: rgba(255,255,255,0.3);
+        font-size: 11px;
+        letter-spacing: .1em;
+        margin-bottom: 32px;
+      }
+
+      .close-btn {
+        padding: 12px 36px;
+        border: 1.5px solid rgba(255,255,255,0.18);
+        background: rgba(255,255,255,0.06);
+        border-radius: 40px;
+        color: rgba(255,255,255,0.75);
+        font-size: 14px;
+        font-weight: 500;
+        font-family: 'Poppins', sans-serif;
+        cursor: pointer;
+        transition: background .2s, border-color .2s;
+      }
+      .close-btn:hover {
+        background: rgba(255,255,255,0.12);
+        border-color: rgba(255,255,255,0.28);
+      }
+      .close-btn:active { transform: scale(.96); }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="mobile-shell" id="shell">
+
+      <!-- TOP BAR -->
+      <div class="top-bar">
+        
+        <span class="top-badge">💗 Sana</span>
+      </div>
+
+      <!-- LYRICS -->
+      <div class="lyrics-box">
+        <span class="lyrics-quote">"</span>
+        <div class="lyrics-text">
+          Oppanaigal edhumatra<br>
+          உந்தன் இயல்பும்<br>
+          karpanaiyil aazhthugindra<br>
+          kallacchirippum<br>
+          இன்னும் வேண்டும் சொல்லும்<br>
+          குட்டி kurumbum<br>
+          காலம் ulla kaalam varai<br>
+          nenjil இனிக்கும் 💗
+        </div>
+      </div>
+
+      <!-- AUDIO CARD -->
+      <div class="audio-card">
+
+
+
+        <!-- Controls + waveform -->
+        <div class="controls-row">
+          <button class="play-btn" id="playBtn" onclick="togglePlay()" aria-label="Play or pause">
+            <svg id="playIcon" width="16" height="16" viewBox="0 0 16 16">
+              <polygon points="4,2 14,8 4,14"/>
+            </svg>
+          </button>
+
+          <div class="wave" id="waveform">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div>
+          </div>
         </div>
 
-        <div class="progress-wrap">
-          <div class="progress"></div>
+        <!-- Hidden audio element -->
+        <audio id="audio">
+          <source src="./songs/oppanaikal.mpeg" type="audio/mp3">
+        </audio>
+
+        <!-- Progress bar -->
+        <div class="progress-wrap" id="progressWrap">
+          <div class="progress" id="progress">
+            <div class="progress-thumb"></div>
+          </div>
         </div>
 
+        <!-- Time -->
         <div class="time-row">
-          <span class="time elapsed">0:00</span>
-          <span class="time duration">0:00</span>
+          <span id="elapsed">0:00</span>
+          <span id="audioDuration">0:00</span>
         </div>
+
+      </div>
+
+      <!-- SCAN SECTION -->
+      <div class="scan-section">
+        <div class="scan-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#5c5c80" stroke-width="2" stroke-linecap="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          Scan the next paper to continue
+        </div>
+
+        <button class="scan-btn" id="scanBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#27304f" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/>
+            <line x1="7" y1="12" x2="17" y2="12"/>
+          </svg>
+          Scan next page
+        </button>
+      </div>
+
+      <!-- SCANNER OVERLAY -->
+      <div class="scanner-overlay" id="scanner">
+
+        <div class="scan-overlay-title">Align paper within frame</div>
+
+        <div class="scanner-box">
+          <span class="corner tl"></span>
+          <span class="corner tr"></span>
+          <span class="corner bl"></span>
+          <span class="corner br"></span>
+          <div class="scan-inner">
+            <div class="scan-grid"></div>
+            <div class="scan-line"></div>
+          <div id="qr-reader" style="width: 210px; height: 210px; margin: 0 auto;"></div>
+          </div>
+        </div>
+
+      <div class="scan-hint" id="scanHint">Hold steady · Auto-detects QR</div>
+
+        <button class="close-btn" id="closeBtn">Done</button>
 
       </div>
 
     </div>
 
-    <!-- SCAN TEXT -->
+  <!-- html5-qrcode CDN -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.10/html5-qrcode.min.js"></script>
+    <script>
+      let isPlaying = false;
+      let interval  = null;
 
-    <div class="scan-text">
-      Scan the next paper to continue 💗
-    </div>
+      const audio       = document.getElementById('audio');
+      const playIcon    = document.getElementById('playIcon');
+      const waveform    = document.getElementById('waveform');
+      const progress    = document.getElementById('progress');
+      const elapsed     = document.getElementById('elapsed');
+      const durationEl  = document.getElementById('audioDuration');
+      const progressWrap= document.getElementById('progressWrap');
 
-    <!-- BUTTON -->
-
-    <button class="scan-btn" id="scanBtn">
-      ⌲ Scan next
-    </button>
-
-  </div>
-
-  <!-- SCANNER -->
-
-  <div class="scanner" id="scanner">
-
-    <div class="scanner-box">
-      <div class="line"></div>
-    </div>
-
-    <button class="close" id="closeBtn">
-      Close Scanner
-    </button>
-
-  </div>
-
-  <script>
-
-    function togglePlay(btn){
-
-      const card =
-      btn.closest('.audio-card');
-
-      const audio =
-      card.querySelector('audio');
-
-      const waveform =
-      card.querySelector('.waveform');
-
-      const elapsed =
-      card.querySelector('.elapsed');
-
-      const duration =
-      card.querySelector('.duration');
-
-      const progress =
-      card.querySelector('.progress');
-
-      // LOAD DURATION
-
-      audio.onloadedmetadata = ()=>{
-
-        let mins =
-        Math.floor(audio.duration / 60);
-
-        let secs =
-        Math.floor(audio.duration % 60);
-
-        if(secs < 10){
-          secs = '0' + secs;
-        }
-
-        duration.textContent =
-        mins + ':' + secs;
-      };
-
-      if(!btn.classList.contains('playing')){
-
-        btn.classList.add('playing');
-
-        waveform.classList.add('playing');
-
-        audio.play();
-
-        btn.interval =
-        setInterval(()=>{
-
-          if(audio.duration){
-
-            const percent =
-            (audio.currentTime /
-            audio.duration) * 100;
-
-            progress.style.width =
-            percent + '%';
-
-            let mins =
-            Math.floor(audio.currentTime / 60);
-
-            let secs =
-            Math.floor(audio.currentTime % 60);
-
-            if(secs < 10){
-              secs = '0' + secs;
-            }
-
-            elapsed.textContent =
-            mins + ':' + secs;
-          }
-
-        },200);
-
-        audio.onended = ()=>{
-
-          btn.classList.remove('playing');
-
-          waveform.classList.remove('playing');
-
-          progress.style.width = '0%';
-
-          elapsed.textContent = '0:00';
-
-          clearInterval(btn.interval);
-        };
-
-      }else{
-
-        btn.classList.remove('playing');
-
-        waveform.classList.remove('playing');
-
-        audio.pause();
-
-        clearInterval(btn.interval);
+      /* ── Helpers ── */
+      function fmt(s) {
+        const m   = Math.floor(s / 60);
+        const sec = Math.floor(s % 60);
+        return m + ':' + (sec < 10 ? '0' : '') + sec;
       }
-    }
 
-    // SCANNER
+      function setIcon(playing) {
+        if (playing) {
+          playIcon.innerHTML =
+            '<rect x="3" y="2" width="4" height="12" rx="1"/>' +
+            '<rect x="9" y="2" width="4" height="12" rx="1"/>';
+        } else {
+          playIcon.innerHTML = '<polygon points="4,2 14,8 4,14"/>';
+        }
+      }
 
-    const scanBtn =
-    document.getElementById('scanBtn');
+      /* ── Metadata ── */
+      audio.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = fmt(audio.duration);
+      });
 
-    const scanner =
-    document.getElementById('scanner');
+      /* ── Play / Pause ── */
+      function togglePlay() {
+        if (!isPlaying) {
+          isPlaying = true;
+          waveform.classList.add('playing');
+          setIcon(true);
+          audio.play().catch(() => {});
 
-    const closeBtn =
-    document.getElementById('closeBtn');
+          interval = setInterval(() => {
+            if (audio.duration) {
+              const pct = (audio.currentTime / audio.duration) * 100;
+              progress.style.width = pct + '%';
+              elapsed.textContent  = fmt(audio.currentTime);
+            }
+          }, 200);
 
-    scanBtn.addEventListener('click', ()=>{
+          audio.onended = () => resetPlayer();
+        } else {
+          pausePlayer();
+        }
+      }
 
-      scanner.style.display = 'flex';
+      function pausePlayer() {
+        isPlaying = false;
+        waveform.classList.remove('playing');
+        setIcon(false);
+        audio.pause();
+        clearInterval(interval);
+      }
 
-    });
+      function resetPlayer() {
+        pausePlayer();
+        progress.style.width = '0%';
+        elapsed.textContent  = '0:00';
+      }
 
-    closeBtn.addEventListener('click', ()=>{
+      /* ── Seek ── */
+      progressWrap.addEventListener('click', function(e) {
+        if (!audio.duration) return;
+        const rect = this.getBoundingClientRect();
+        const pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        audio.currentTime   = pct * audio.duration;
+        progress.style.width = (pct * 100) + '%';
+        elapsed.textContent  = fmt(audio.currentTime);
+      });
 
-      scanner.style.display = 'none';
+      /* ── Scanner ── */
+      // QR Scanner integration
+      const scannerOverlay = document.getElementById('scanner');
+      const scanBtn = document.getElementById('scanBtn');
+      const closeBtn = document.getElementById('closeBtn');
+      let html5QrCode = null;
 
-    });
+      scanBtn.addEventListener('click', () => {
+        scannerOverlay.classList.add('open');
+        if (!html5QrCode) {
+          html5QrCode = new Html5Qrcode("qr-reader");
+        }
+        document.getElementById('scanHint').textContent = 'Hold steady · Auto-detects QR';
+        html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 180, height: 180 } },
+          qrCodeMessage => {
+            document.getElementById('scanHint').textContent = 'QR detected! Redirecting...';
+            html5QrCode.stop().then(() => {
+              window.location.href = qrCodeMessage;
+            });
+          },
+          _errorMessage => {}
+        ).catch(err => {
+          document.getElementById('scanHint').textContent = 'Camera error: ' + err;
+        });
+      });
 
-  </script>
+      closeBtn.addEventListener('click', () => {
+        scannerOverlay.classList.remove('open');
+        if (html5QrCode) {
+          html5QrCode.stop().catch(() => {});
+        }
+      });
+    </script>
 
-</body>
-</html>
+  </body>
+  </html>
