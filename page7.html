@@ -867,39 +867,115 @@
     const scannerOverlay = document.getElementById('scanner');
     const scanBtn = document.getElementById('scanBtn');
     const closeBtn = document.getElementById('closeBtn');
+    const scanHint = document.getElementById('scanHint');
+    const qrReader = document.getElementById('qr-reader');
     let html5QrCode = null;
+    let fallbackStream = null;
+    let fallbackVideo = null;
+    let fallbackRaf = null;
+    let fallbackDetector = null;
+
+    if ('BarcodeDetector' in window) {
+      try {
+        fallbackDetector = new BarcodeDetector({ formats: ['qr_code'] });
+      } catch (_e) {}
+    }
+
+    function stopFallbackScanner() {
+      if (fallbackRaf) {
+        cancelAnimationFrame(fallbackRaf);
+        fallbackRaf = null;
+      }
+      if (fallbackStream) {
+        fallbackStream.getTracks().forEach(track => track.stop());
+        fallbackStream = null;
+      }
+      if (qrReader) {
+        qrReader.innerHTML = '';
+      }
+      fallbackVideo = null;
+    }
+
+    async function startFallbackScanner() {
+      if (!fallbackDetector) {
+        scanHint.textContent = 'Scanner unavailable on this browser.';
+        return;
+      }
+
+      stopFallbackScanner();
+      fallbackVideo = document.createElement('video');
+      fallbackVideo.setAttribute('playsinline', 'true');
+      fallbackVideo.muted = true;
+      fallbackVideo.style.width = '100%';
+      fallbackVideo.style.height = '100%';
+      qrReader.innerHTML = '';
+      qrReader.appendChild(fallbackVideo);
+
+      try {
+        fallbackStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } }
+        });
+      } catch (err) {
+        scanHint.textContent = 'Camera error: ' + (err && err.message ? err.message : err);
+        return;
+      }
+
+      fallbackVideo.srcObject = fallbackStream;
+      await fallbackVideo.play();
+      scanHint.textContent = 'Hold steady · Auto-detects QR';
+
+      const tick = async () => {
+        if (!fallbackVideo) {
+          return;
+        }
+        try {
+          const codes = await fallbackDetector.detect(fallbackVideo);
+          if (codes && codes.length && codes[0].rawValue) {
+            scanHint.textContent = 'QR detected! Redirecting...';
+            const target = codes[0].rawValue;
+            stopFallbackScanner();
+            window.location.href = target;
+            return;
+          }
+        } catch (_e) {}
+        fallbackRaf = requestAnimationFrame(tick);
+      };
+
+      fallbackRaf = requestAnimationFrame(tick);
+    }
 
     scanBtn.addEventListener('click', () => {
       scannerOverlay.classList.add('open');
 
       if (typeof Html5Qrcode === 'undefined') {
-        document.getElementById('scanHint').textContent = 'Scanner failed to load (CDN blocked).';
+        startFallbackScanner();
         return;
       }
 
+      stopFallbackScanner();
       if (!html5QrCode) {
-        html5QrCode = new Html5Qrcode("qr-reader");
+        html5QrCode = new Html5Qrcode('qr-reader');
       }
-
-      document.getElementById('scanHint').textContent = 'Hold steady · Auto-detects QR';
+      scanHint.textContent = 'Hold steady · Auto-detects QR';
 
       html5QrCode.start(
-        { facingMode: "environment" },
+        { facingMode: 'environment' },
         { fps: 10, qrbox: { width: 180, height: 180 } },
         qrCodeMessage => {
-          document.getElementById('scanHint').textContent = 'QR detected! Redirecting...';
+          scanHint.textContent = 'QR detected! Redirecting...';
           html5QrCode.stop().then(() => {
             window.location.href = qrCodeMessage;
           });
         },
         _errorMessage => {}
       ).catch(err => {
-        document.getElementById('scanHint').textContent = 'Camera error: ' + err;
+        scanHint.textContent = 'Camera error: ' + (err && err.message ? err.message : err);
       });
     });
 
     closeBtn.addEventListener('click', () => {
       scannerOverlay.classList.remove('open');
+      stopFallbackScanner();
       if (html5QrCode) {
         html5QrCode.stop().catch(() => {});
       }
