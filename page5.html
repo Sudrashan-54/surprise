@@ -443,7 +443,7 @@
 </div>
 
 <!-- html5-qrcode CDN -->
-<script src="https://unpkg.com/html5-qrcode@2.3.10/html5-qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.10/html5-qrcode.min.js"></script>
 <script>
   const audio = document.getElementById('audio');
   const playBtn = document.getElementById('playBtn');
@@ -507,6 +507,10 @@
 
   scanBtn.addEventListener('click', () => {
     scannerOverlay.classList.add('open');
+    if (typeof Html5Qrcode === 'undefined') {
+      document.getElementById('scanHint').textContent = 'Scanner failed to load (CDN blocked).';
+      return;
+    }
     if (!html5QrCode) {
       html5QrCode = new Html5Qrcode("qr-reader");
     }

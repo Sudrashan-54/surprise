@@ -48,16 +48,9 @@
 
     .top-bar{
       display:flex;
-      justify-content:space-between;
+      justify-content:flex-end;
       align-items:center;
       margin-bottom:26px;
-    }
-
-    .top-label{
-      font-size:11px;
-      font-weight:600;
-      letter-spacing:.18em;
-      color:#c07a12;
     }
 
     .top-badge{
@@ -91,11 +84,16 @@
         );
 
       border-radius:34px;
-      padding:44px 30px 40px;
+      padding:34px 24px 30px;
       position:relative;
       overflow:hidden;
 
       margin-bottom:24px;
+
+      min-height:280px;
+
+      display:flex;
+      align-items:center;
 
       box-shadow:
         0 18px 40px rgba(247,127,0,.22);
@@ -106,7 +104,7 @@
       top:10px;
       left:18px;
 
-      font-size:90px;
+      font-size:78px;
       line-height:1;
 
       color:rgba(255,255,255,.16);
@@ -118,12 +116,17 @@
       position:relative;
       z-index:2;
 
+      width:100%;
+
       font-family:'Noto Serif Tamil',serif;
-      font-size:27px;
-      line-height:1.85;
+
+      font-size:22px;
+      line-height:1.65;
       font-weight:500;
 
       color:#ffffff;
+
+      word-break:break-word;
     }
 
     /* AUDIO CARD */
@@ -571,8 +574,6 @@
 
     <div class="top-bar">
 
-      
-
       <div class="top-badge">
         💗 Sana
       </div>
@@ -588,15 +589,13 @@
       <div class="lyrics-text">
 
         யாரின் மழை மீது<br>
-        யாரின் மழை சேர்ந்ததோ<br><br>
-
-        யாரின் குடை வாங்கி<br>
+        யாரின் மழை சேர்ந்ததோ<br>
+        யாரின் குடை வாங்கி
         யாரின் மனம் போகுதோ<br><br>
 
-        திறக்காத கதவாய்<br>
-        பல நாள் போனதே<br><br>
-
-        கதவில்லா வெளியாய்<br>
+        திறக்காத கதவாய்
+        பல நாள் போனதே<br>
+        கதவில்லா வெளியாய்
         புது நாள் சேருதே
 
       </div>
@@ -730,13 +729,14 @@
           <div class="scan-grid"></div>
 
           <div class="scan-line"></div>
+          <div id="qr-reader" style="width: 210px; height: 210px; margin: 0 auto;"></div>
 
         </div>
 
       </div>
 
-      <div class="scan-hint">
-        Hold steady • Auto-detects lyrics
+      <div class="scan-hint" id="scanHint">
+        Hold steady · Auto-detects QR
       </div>
 
       <button class="close-btn" id="closeBtn">
@@ -747,6 +747,8 @@
 
   </div>
 
+  <!-- html5-qrcode CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.10/html5-qrcode.min.js"></script>
   <script>
 
     let isPlaying = false;
@@ -877,22 +879,46 @@
 
     });
 
-    // SCANNER
+    // QR Scanner integration
+    const scannerOverlay = document.getElementById('scanner');
+    const scanBtn = document.getElementById('scanBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    let html5QrCode = null;
 
-    document.getElementById('scanBtn')
-    .addEventListener('click', () => {
+    scanBtn.addEventListener('click', () => {
+      scannerOverlay.classList.add('open');
 
-      document.getElementById('scanner')
-      .classList.add('open');
+      if (typeof Html5Qrcode === 'undefined') {
+        document.getElementById('scanHint').textContent = 'Scanner failed to load (CDN blocked).';
+        return;
+      }
 
+      if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode("qr-reader");
+      }
+
+      document.getElementById('scanHint').textContent = 'Hold steady · Auto-detects QR';
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 180, height: 180 } },
+        qrCodeMessage => {
+          document.getElementById('scanHint').textContent = 'QR detected! Redirecting...';
+          html5QrCode.stop().then(() => {
+            window.location.href = qrCodeMessage;
+          });
+        },
+        _errorMessage => {}
+      ).catch(err => {
+        document.getElementById('scanHint').textContent = 'Camera error: ' + err;
+      });
     });
 
-    document.getElementById('closeBtn')
-    .addEventListener('click', () => {
-
-      document.getElementById('scanner')
-      .classList.remove('open');
-
+    closeBtn.addEventListener('click', () => {
+      scannerOverlay.classList.remove('open');
+      if (html5QrCode) {
+        html5QrCode.stop().catch(() => {});
+      }
     });
 
   </script>

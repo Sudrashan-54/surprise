@@ -48,16 +48,9 @@
 
     .top-bar{
       display:flex;
-      justify-content:space-between;
+      justify-content:flex-end;
       align-items:center;
-      margin-bottom:26px;
-    }
-
-    .top-label{
-      font-size:11px;
-      font-weight:600;
-      letter-spacing:.18em;
-      color:#6b72a5;
+      margin-bottom:24px;
     }
 
     .top-badge{
@@ -69,7 +62,7 @@
       font-weight:500;
 
       box-shadow:
-        0 6px 18px rgba(216,27,96,.2);
+        0 6px 18px rgba(22,46,147,.22);
     }
 
     /* LYRICS SECTION */
@@ -78,24 +71,29 @@
 
       background:
         radial-gradient(circle at top right,
-        rgba(255,255,255,.14), transparent 28%),
+        rgba(255,255,255,.16), transparent 30%),
 
         radial-gradient(circle at bottom left,
-        rgba(255,255,255,.08), transparent 30%),
+        rgba(255,255,255,.08), transparent 28%),
 
         linear-gradient(
           135deg,
           #162E93 0%,
-          #243fa8 45%,
+          #2846bb 45%,
           #1A1953 100%
         );
 
       border-radius:34px;
-      padding:44px 30px 40px;
+      padding:30px 24px 28px;
       position:relative;
       overflow:hidden;
 
-      margin-bottom:24px;
+      margin-bottom:22px;
+
+      min-height:220px;
+
+      display:flex;
+      align-items:center;
 
       box-shadow:
         0 18px 40px rgba(26,25,83,.22);
@@ -103,13 +101,13 @@
 
     .lyrics-quote{
       position:absolute;
-      top:10px;
-      left:18px;
+      top:6px;
+      left:16px;
 
-      font-size:90px;
+      font-size:78px;
       line-height:1;
 
-      color:rgba(255,255,255,.12);
+      color:rgba(255,255,255,.10);
 
       font-family:Georgia,serif;
     }
@@ -118,12 +116,19 @@
       position:relative;
       z-index:2;
 
+      width:100%;
+
       font-family:'Noto Serif Tamil',serif;
-      font-size:28px;
-      line-height:1.9;
+
+      font-size:21px;
+      line-height:1.7;
       font-weight:500;
 
       color:#ffffff;
+
+      text-align:left;
+
+      word-break:break-word;
     }
 
     /* AUDIO CARD */
@@ -571,8 +576,6 @@
 
     <div class="top-bar">
 
-      
-
       <div class="top-badge">
         💗 Sana
       </div>
@@ -724,13 +727,14 @@
           <div class="scan-grid"></div>
 
           <div class="scan-line"></div>
+          <div id="qr-reader" style="width: 210px; height: 210px; margin: 0 auto;"></div>
 
         </div>
 
       </div>
 
-      <div class="scan-hint">
-        Hold steady • Auto-detects lyrics
+      <div class="scan-hint" id="scanHint">
+        Hold steady · Auto-detects QR
       </div>
 
       <button class="close-btn" id="closeBtn">
@@ -741,6 +745,8 @@
 
   </div>
 
+  <!-- html5-qrcode CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.10/html5-qrcode.min.js"></script>
   <script>
 
     let isPlaying = false;
@@ -871,22 +877,46 @@
 
     });
 
-    // SCANNER
+    // QR Scanner integration
+    const scannerOverlay = document.getElementById('scanner');
+    const scanBtn = document.getElementById('scanBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    let html5QrCode = null;
 
-    document.getElementById('scanBtn')
-    .addEventListener('click', () => {
+    scanBtn.addEventListener('click', () => {
+      scannerOverlay.classList.add('open');
 
-      document.getElementById('scanner')
-      .classList.add('open');
+      if (typeof Html5Qrcode === 'undefined') {
+        document.getElementById('scanHint').textContent = 'Scanner failed to load (CDN blocked).';
+        return;
+      }
 
+      if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode("qr-reader");
+      }
+
+      document.getElementById('scanHint').textContent = 'Hold steady · Auto-detects QR';
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 180, height: 180 } },
+        qrCodeMessage => {
+          document.getElementById('scanHint').textContent = 'QR detected! Redirecting...';
+          html5QrCode.stop().then(() => {
+            window.location.href = qrCodeMessage;
+          });
+        },
+        _errorMessage => {}
+      ).catch(err => {
+        document.getElementById('scanHint').textContent = 'Camera error: ' + err;
+      });
     });
 
-    document.getElementById('closeBtn')
-    .addEventListener('click', () => {
-
-      document.getElementById('scanner')
-      .classList.remove('open');
-
+    closeBtn.addEventListener('click', () => {
+      scannerOverlay.classList.remove('open');
+      if (html5QrCode) {
+        html5QrCode.stop().catch(() => {});
+      }
     });
 
   </script>

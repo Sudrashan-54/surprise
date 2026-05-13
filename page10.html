@@ -2,314 +2,571 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport"
+    content="width=device-width,
+    initial-scale=1.0,
+    maximum-scale=1.0,
+    user-scalable=no"/>
+
   <title>Sana – Lyrics Scanner</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <style>
 
-    *, *::before, *::after {
-      margin: 0; padding: 0; box-sizing: border-box;
+    *,
+    *::before,
+    *::after{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
     }
 
-    body {
-      background: #f0ebe3;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Poppins', sans-serif;
-      padding: 30px 0;
+    html,
+    body{
+      width:100%;
+      height:100%;
+      overflow:hidden;
     }
 
-    /* ── MOBILE SHELL ── */
-    .mobile-shell {
-      width: 390px;
-      min-height: 844px;
-      background: transparent;
-      border-radius: 48px;
-      padding: 0;
-      overflow: hidden;
-      position: relative;
+    body{
+      background:#000;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      font-family:'Poppins',sans-serif;
+      touch-action:none;
+    }
+
+    /* MOBILE */
+
+    .mobile-shell{
+      width:390px;
+      height:844px;
+
+      position:relative;
+      overflow:hidden;
+
+      border-radius:48px;
+
+      background:#000;
+
       box-shadow:
-        0 20px 60px rgba(0,0,0,0.10),
-        0 8px 24px rgba(0,0,0,0.06);
-      border: 1px solid rgba(0,0,0,0.05);
+        0 20px 60px rgba(0,0,0,.18),
+        0 8px 24px rgba(0,0,0,.12);
+
+      border:1px solid rgba(255,255,255,.05);
     }
 
-    /* content sits above the video */
-    .content-layer {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      min-height: 844px;
-      padding: 0 22px 30px;
+    /* VIDEO */
+
+    .video-box{
+      position:absolute;
+      inset:0;
+
+      width:100%;
+      height:100%;
+
+      overflow:hidden;
+      background:#000;
+
+      z-index:0;
     }
 
-    /* ── VIDEO – bleeds to all four edges, fills full shell ── */
-    .video-box {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-      background: #000;
-      z-index: 0;
+    .video-box video{
+      position:absolute;
+
+      top:50%;
+      left:50%;
+
+      width:100%;
+      height:100%;
+
+      object-fit:cover;
+
+      transform:translate(-50%,-50%);
+
+      pointer-events:none;
+
+      user-select:none;
+      -webkit-user-drag:none;
     }
 
-    .video-box video {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+    /* DARK OVERLAY */
+
+    .video-box::after{
+      content:'';
+
+      position:absolute;
+      inset:0;
+
+      background:
+        linear-gradient(
+          to top,
+          rgba(0,0,0,.82) 0%,
+          rgba(0,0,0,.45) 45%,
+          rgba(0,0,0,.12) 100%
+        );
+
+      z-index:2;
     }
 
-    /* subtle warm tint */
-    .video-box::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        135deg,
-        rgba(252,191,73,.12) 0%,
-        rgba(247,127,0,.07) 100%
-      );
-      pointer-events: none;
-      z-index: 2;
+    /* CONTENT */
+
+    .content-layer{
+      position:relative;
+      z-index:5;
+
+      width:100%;
+      height:100%;
+
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+
+      padding:0 22px 30px;
     }
 
-    /* bottom scrim – deep enough to cover audio + scanner */
-    .vid-scrim {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      height: 65%;
-      background: linear-gradient(to top, rgba(0,0,0,.72) 0%, rgba(0,0,0,.3) 50%, transparent 100%);
-      z-index: 2;
-      pointer-events: none;
+    /* AUDIO CARD */
+
+    .audio-card{
+      background:rgba(0,0,0,.42);
+
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+
+      border-radius:30px;
+
+      padding:24px 18px 18px;
+
+      margin-bottom:18px;
+
+      border:1px solid rgba(255,255,255,.10);
     }
 
-    /* thin orange progress strip */
-    .vid-progress-bar { display: none; }
+    .controls-row{
+      display:flex;
+      align-items:center;
+      gap:16px;
 
-    /* ── AUDIO CARD – frosted glass over video ── */
-    .audio-card {
-      background: rgba(0,0,0,0.45);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: 30px;
-      padding: 24px 18px 18px;
-      margin-bottom: 18px;
-      border: 1px solid rgba(255,255,255,.12);
+      margin-bottom:18px;
     }
 
-    .controls-row {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 18px;
+    .play-btn{
+      width:64px;
+      height:64px;
+
+      border:none;
+      border-radius:50%;
+
+      cursor:pointer;
+
+      background:
+        linear-gradient(
+          135deg,
+          #ffb347,
+          #F77F00
+        );
+
+      display:flex;
+      justify-content:center;
+      align-items:center;
+
+      flex-shrink:0;
+
+      box-shadow:
+        0 10px 24px rgba(247,127,0,.4);
+
+      transition:.2s;
     }
 
-    .play-btn {
-      width: 64px; height: 64px;
-      border: none; border-radius: 50%;
-      cursor: pointer;
-      background: linear-gradient(135deg, #ffb347, #F77F00);
-      display: flex; justify-content: center; align-items: center;
-      flex-shrink: 0;
-      transition: .2s;
-      box-shadow: 0 10px 24px rgba(247,127,0,.4);
-    }
-    .play-btn:hover { transform: scale(1.05); }
-    .play-btn svg   { fill: white; }
-
-    /* waveform */
-    .wave {
-      display: flex; align-items: flex-end;
-      gap: 4px; flex: 1; height: 46px;
-    }
-    .bar {
-      flex: 1; border-radius: 10px;
-      background: rgba(255,255,255,.22);
-      animation: idle 1.8s ease infinite;
-      transform-origin: bottom;
-    }
-    .bar:nth-child(1){height:30%}.bar:nth-child(2){height:50%}
-    .bar:nth-child(3){height:40%}.bar:nth-child(4){height:80%}
-    .bar:nth-child(5){height:45%}.bar:nth-child(6){height:65%}
-    .bar:nth-child(7){height:35%}.bar:nth-child(8){height:90%}
-    .bar:nth-child(9){height:52%}.bar:nth-child(10){height:75%}
-    .bar:nth-child(11){height:30%}.bar:nth-child(12){height:65%}
-    .bar:nth-child(13){height:42%}.bar:nth-child(14){height:55%}
-
-    @keyframes idle {
-      0%,100% { transform:scaleY(1);   opacity:.4;  }
-      50%      { transform:scaleY(.65); opacity:.75; }
-    }
-    .wave.playing .bar {
-      background: #ff8c00;
-      animation: dance .45s ease infinite alternate;
-    }
-    @keyframes dance {
-      from { transform: scaleY(.3); }
-      to   { transform: scaleY(1);  }
+    .play-btn:hover{
+      transform:scale(1.05);
     }
 
-    /* progress */
-    .progress-wrap {
-      width: 100%; height: 6px;
-      background: rgba(255,255,255,.18);
-      border-radius: 999px; overflow: hidden;
-      cursor: pointer; margin-bottom: 10px;
-    }
-    .progress {
-      width: 0%; height: 100%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #FCBF49, #F77F00);
-      position: relative;
-    }
-    .progress::after {
-      content: '';
-      position: absolute; right: -6px; top: 50%;
-      transform: translateY(-50%);
-      width: 14px; height: 14px;
-      border-radius: 50%; background: #F77F00;
-    }
-    .time-row {
-      display: flex; justify-content: space-between;
-      font-size: 11px; font-weight: 500;
-      letter-spacing: .08em; color: rgba(255,255,255,.65);
+    .play-btn svg{
+      fill:white;
     }
 
-    /* ── SCANNER SECTION ── */
-    .scan-label {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 14px; padding-left: 4px;
-      color: rgba(255,255,255,.75); font-size: 15px;
-    }
-    .scan-label svg { width: 18px; height: 18px; stroke: rgba(255,255,255,.75) !important; }
+    /* WAVE */
 
-    .scan-btn {
-      width: 100%; height: 72px;
-      border: none; border-radius: 28px;
-      cursor: pointer;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      color: #FCBF49;
-      font-size: 18px; font-weight: 600;
-      display: flex; align-items: center; justify-content: center; gap: 14px;
-      transition: .2s;
-      border: 1px solid rgba(255,255,255,.12);
-    }
-    .scan-btn:hover { transform: translateY(-2px); }
-    .scan-btn svg   { width: 28px; height: 28px; stroke: #FCBF49 !important; }
+    .wave{
+      display:flex;
+      align-items:flex-end;
 
-    /* ── SCANNER OVERLAY ── */
-    .scanner-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, #FCBF49, #F77F00);
-      display: none;
-      justify-content: center; align-items: center; flex-direction: column;
-      border-radius: 48px;
-      z-index: 20;
-      animation: fadeIn .3s ease;
-    }
-    .scanner-overlay.open { display: flex; }
-    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+      gap:4px;
 
-    .scan-overlay-title {
-      color: rgba(255,255,255,.92);
-      font-size: 13px; letter-spacing: .2em;
-      margin-bottom: 28px;
+      flex:1;
+      height:46px;
     }
-    .scanner-box {
-      width: 230px; height: 230px;
-      position: relative; margin-bottom: 22px;
-    }
-    .corner {
-      position: absolute;
-      width: 28px; height: 28px;
-      border-style: solid; border-color: #ffffff;
-    }
-    .corner.tl { top:0;    left:0;  border-width:4px 0 0 4px; border-radius:8px 0 0 0; }
-    .corner.tr { top:0;    right:0; border-width:4px 4px 0 0; border-radius:0 8px 0 0; }
-    .corner.bl { bottom:0; left:0;  border-width:0 0 4px 4px; border-radius:0 0 0 8px; }
-    .corner.br { bottom:0; right:0; border-width:0 4px 4px 0; border-radius:0 0 8px 0; }
-    .scan-inner {
-      position: absolute; inset: 0;
-      border-radius: 18px; overflow: hidden;
-      background: rgba(255,255,255,.04);
-    }
-    .scan-grid {
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
-      background-size: 18px 18px;
-    }
-    .scan-line {
-      position: absolute; left: 0; right: 0; height: 4px;
-      background: #ffffff;
-      box-shadow: 0 0 12px #ffffff, 0 0 24px rgba(255,255,255,.7);
-      animation: scanline 2s ease-in-out infinite;
-    }
-    @keyframes scanline { 0% { top:0%; } 100% { top:100%; } }
 
-    .scan-hint {
-      color: rgba(255,255,255,.88);
-      font-size: 14px; letter-spacing: .08em;
-      margin-bottom: 28px;
+    .bar{
+      flex:1;
+
+      border-radius:10px;
+
+      background:rgba(255,255,255,.22);
+
+      animation:idle 1.8s ease infinite;
+
+      transform-origin:bottom;
     }
-    .close-btn {
-      border: 1px solid rgba(255,255,255,.22);
-      background: rgba(255,255,255,.14);
-      color: white;
-      padding: 14px 42px;
-      border-radius: 999px;
-      font-size: 18px; font-weight: 600;
-      cursor: pointer;
-      backdrop-filter: blur(8px);
+
+    .bar:nth-child(1){height:30%}
+    .bar:nth-child(2){height:50%}
+    .bar:nth-child(3){height:40%}
+    .bar:nth-child(4){height:80%}
+    .bar:nth-child(5){height:45%}
+    .bar:nth-child(6){height:65%}
+    .bar:nth-child(7){height:35%}
+    .bar:nth-child(8){height:90%}
+    .bar:nth-child(9){height:52%}
+    .bar:nth-child(10){height:75%}
+    .bar:nth-child(11){height:30%}
+    .bar:nth-child(12){height:65%}
+    .bar:nth-child(13){height:42%}
+    .bar:nth-child(14){height:55%}
+
+    @keyframes idle{
+
+      0%,100%{
+        transform:scaleY(1);
+        opacity:.4;
+      }
+
+      50%{
+        transform:scaleY(.65);
+        opacity:.75;
+      }
+
+    }
+
+    .wave.playing .bar{
+      background:#ff8c00;
+      animation:dance .45s ease infinite alternate;
+    }
+
+    @keyframes dance{
+
+      from{
+        transform:scaleY(.3);
+      }
+
+      to{
+        transform:scaleY(1);
+      }
+
+    }
+
+    /* PROGRESS */
+
+    .progress-wrap{
+      width:100%;
+      height:6px;
+
+      background:rgba(255,255,255,.18);
+
+      border-radius:999px;
+
+      overflow:hidden;
+
+      cursor:pointer;
+
+      margin-bottom:10px;
+    }
+
+    .progress{
+      width:0%;
+      height:100%;
+
+      border-radius:999px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #FCBF49,
+          #F77F00
+        );
+
+      position:relative;
+    }
+
+    .progress::after{
+      content:'';
+
+      position:absolute;
+
+      right:-6px;
+      top:50%;
+
+      transform:translateY(-50%);
+
+      width:14px;
+      height:14px;
+
+      border-radius:50%;
+
+      background:#F77F00;
+    }
+
+    .time-row{
+      display:flex;
+      justify-content:space-between;
+
+      font-size:11px;
+      font-weight:500;
+
+      letter-spacing:.08em;
+
+      color:rgba(255,255,255,.65);
+    }
+
+    /* SCAN */
+
+    .scan-label{
+      display:flex;
+      align-items:center;
+      gap:8px;
+
+      margin-bottom:14px;
+      padding-left:4px;
+
+      color:rgba(255,255,255,.75);
+
+      font-size:15px;
+    }
+
+    .scan-label svg{
+      width:18px;
+      height:18px;
+    }
+
+    .scan-btn{
+      width:100%;
+      height:72px;
+
+      border:none;
+      border-radius:28px;
+
+      cursor:pointer;
+
+      background:rgba(0,0,0,.42);
+
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+
+      color:#FCBF49;
+
+      font-size:18px;
+      font-weight:600;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:14px;
+
+      border:1px solid rgba(255,255,255,.10);
+
+      transition:.2s;
+    }
+
+    .scan-btn:hover{
+      transform:translateY(-2px);
+    }
+
+    .scan-btn svg{
+      width:28px;
+      height:28px;
+      stroke:#FCBF49 !important;
+    }
+
+    /* SCANNER */
+
+    .scanner-overlay{
+      position:absolute;
+      inset:0;
+
+      background:
+        linear-gradient(
+          135deg,
+          #FCBF49,
+          #F77F00
+        );
+
+      display:none;
+
+      justify-content:center;
+      align-items:center;
+      flex-direction:column;
+
+      z-index:20;
+    }
+
+    .scanner-overlay.open{
+      display:flex;
+    }
+
+    .scan-overlay-title{
+      color:white;
+
+      font-size:13px;
+      letter-spacing:.2em;
+
+      margin-bottom:28px;
+    }
+
+    .scanner-box{
+      width:230px;
+      height:230px;
+
+      position:relative;
+
+      margin-bottom:22px;
+    }
+
+    .corner{
+      position:absolute;
+
+      width:28px;
+      height:28px;
+
+      border-style:solid;
+      border-color:#fff;
+    }
+
+    .corner.tl{
+      top:0;
+      left:0;
+
+      border-width:4px 0 0 4px;
+    }
+
+    .corner.tr{
+      top:0;
+      right:0;
+
+      border-width:4px 4px 0 0;
+    }
+
+    .corner.bl{
+      bottom:0;
+      left:0;
+
+      border-width:0 0 4px 4px;
+    }
+
+    .corner.br{
+      bottom:0;
+      right:0;
+
+      border-width:0 4px 4px 0;
+    }
+
+    .scan-inner{
+      position:absolute;
+      inset:0;
+
+      border-radius:18px;
+
+      overflow:hidden;
+
+      background:rgba(255,255,255,.05);
+    }
+
+    .scan-hint{
+      color:rgba(255,255,255,.9);
+
+      font-size:14px;
+
+      margin-bottom:28px;
+    }
+
+    .close-btn{
+      border:none;
+
+      background:rgba(255,255,255,.16);
+
+      color:white;
+
+      padding:14px 42px;
+
+      border-radius:999px;
+
+      font-size:18px;
+      font-weight:600;
+
+      cursor:pointer;
+
+      backdrop-filter:blur(8px);
     }
 
   </style>
 </head>
+
 <body>
 
   <div class="mobile-shell">
 
-    <!-- VIDEO – autoplays muted in background, loops -->
-    <div class="video-box" id="videoBox">
-      <video id="mainVideo" playsinline autoplay muted loop>
+    <!-- VIDEO -->
+
+    <div class="video-box">
+
+      <video
+        id="mainVideo"
+        autoplay
+        muted
+        loop
+        playsinline
+        webkit-playsinline
+        preload="auto"
+      >
+
         <source src="./songs/mp4.mp4" type="video/mp4">
+
       </video>
-      <div class="vid-scrim"></div>
+
     </div>
 
-    <!-- AUDIO + SCANNER float over the video -->
+    <!-- CONTENT -->
+
     <div class="content-layer">
 
-      <!-- AUDIO CARD -->
+      <!-- AUDIO -->
+
       <div class="audio-card">
+
         <div class="controls-row">
+
           <button class="play-btn" id="playBtn" onclick="togglePlay()">
+
             <svg id="playIcon" width="18" height="18" viewBox="0 0 16 16">
               <polygon points="4,2 14,8 4,14"/>
             </svg>
+
           </button>
+
           <div class="wave" id="waveform">
-            <div class="bar"></div><div class="bar"></div>
-            <div class="bar"></div><div class="bar"></div>
-            <div class="bar"></div><div class="bar"></div>
-            <div class="bar"></div><div class="bar"></div>
-            <div class="bar"></div><div class="bar"></div>
-            <div class="bar"></div><div class="bar"></div>
-            <div class="bar"></div><div class="bar"></div>
+
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+
           </div>
+
         </div>
 
         <audio id="audio">
@@ -319,53 +576,134 @@
         <div class="progress-wrap" id="progressWrap">
           <div class="progress" id="progress"></div>
         </div>
+
         <div class="time-row">
+
           <span id="elapsed">0:00</span>
+
           <span id="audioDuration">0:00</span>
+
         </div>
+
       </div>
 
-      <!-- SCANNER -->
+      <!-- SCAN -->
+
       <div class="scan-section">
+
         <div class="scan-label">
-          <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="2" stroke-linecap="round">
+
+          <svg viewBox="0 0 24 24"
+            fill="none"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round">
+
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+
           </svg>
+
           Scan the next paper to continue
+
         </div>
+
         <button class="scan-btn" id="scanBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#FCBF49" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+          <svg viewBox="0 0 24 24"
+            fill="none"
+            stroke="#FCBF49"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round">
+
             <path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/>
+
             <line x1="7" y1="12" x2="17" y2="12"/>
+
           </svg>
+
           Scan next page
+
         </button>
+
       </div>
 
-    </div><!-- /.content-layer -->
+    </div>
 
-    <!-- SCANNER OVERLAY -->
+    <!-- SCANNER -->
+
     <div class="scanner-overlay" id="scanner">
-      <div class="scan-overlay-title">ALIGN PAPER WITHIN FRAME</div>
-      <div class="scanner-box">
-        <span class="corner tl"></span><span class="corner tr"></span>
-        <span class="corner bl"></span><span class="corner br"></span>
-        <div class="scan-inner">
-          <div id="qr-reader" style="width: 210px; height: 210px; margin: 0 auto;"></div>
-        </div>
+
+      <div class="scan-overlay-title">
+        ALIGN PAPER WITHIN FRAME
       </div>
-      <div class="scan-hint" id="scanHint">Hold steady • Auto-detects QR</div>
-      <button class="close-btn" id="closeBtn">Done</button>
+
+      <div class="scanner-box">
+
+        <span class="corner tl"></span>
+        <span class="corner tr"></span>
+        <span class="corner bl"></span>
+        <span class="corner br"></span>
+
+        <div class="scan-inner">
+
+          <div id="qr-reader"
+            style="
+              width:210px;
+              height:210px;
+              margin:0 auto;
+            ">
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="scan-hint" id="scanHint">
+        Hold steady • Auto-detects QR
+      </div>
+
+      <button class="close-btn" id="closeBtn">
+        Done
+      </button>
+
     </div>
 
   </div>
 
-  <!-- html5-qrcode CDN -->
-  <script src="https://unpkg.com/html5-qrcode@2.3.10/html5-qrcode.min.js"></script>
+  <!-- QR -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.10/html5-qrcode.min.js"></script>
+
   <script>
 
-    /* ── AUDIO ── */
-    let isPlaying = false, interval = null;
+    /* PREVENT SCROLL */
+
+    document.addEventListener(
+      'touchmove',
+      function(e){
+        e.preventDefault();
+      },
+      { passive:false }
+    );
+
+    /* VIDEO */
+
+    const bgVideo = document.getElementById('mainVideo');
+
+    bgVideo.playbackRate = 1;
+
+    bgVideo.addEventListener('loadeddata', () => {
+
+      bgVideo.play().catch(()=>{});
+
+    });
+
+    /* AUDIO */
+
+    let isPlaying = false;
+    let interval = null;
+
     const audio        = document.getElementById('audio');
     const playIcon     = document.getElementById('playIcon');
     const waveform     = document.getElementById('waveform');
@@ -374,95 +712,168 @@
     const durationEl   = document.getElementById('audioDuration');
     const progressWrap = document.getElementById('progressWrap');
 
-    function fmt(s) {
-      return Math.floor(s/60) + ':' + (Math.floor(s%60)<10?'0':'') + Math.floor(s%60);
+    function fmt(s){
+
+      return Math.floor(s/60) +
+      ':' +
+      (Math.floor(s%60)<10?'0':'') +
+      Math.floor(s%60);
+
     }
-    function setIcon(p) {
+
+    function setIcon(p){
+
       playIcon.innerHTML = p
-        ? '<rect x="3" y="2" width="4" height="12" rx="1"/><rect x="9" y="2" width="4" height="12" rx="1"/>'
-        : '<polygon points="4,2 14,8 4,14"/>';
+
+      ? '<rect x="3" y="2" width="4" height="12" rx="1"/><rect x="9" y="2" width="4" height="12" rx="1"/>'
+
+      : '<polygon points="4,2 14,8 4,14"/>';
+
     }
 
-    audio.addEventListener('loadedmetadata', () => { durationEl.textContent = fmt(audio.duration); });
+    audio.addEventListener('loadedmetadata', () => {
 
-    function togglePlay() {
-      if (!isPlaying) {
-        isPlaying = true;
-        waveform.classList.add('playing');
-        setIcon(true);
-        audio.play().catch(()=>{});
-        interval = setInterval(() => {
-          if (audio.duration) {
-            progress.style.width = (audio.currentTime / audio.duration * 100) + '%';
-            elapsed.textContent  = fmt(audio.currentTime);
-          }
-        }, 200);
-        audio.onended = resetPlayer;
-      } else {
-        pausePlayer();
-      }
-    }
-    function pausePlayer() {
-      isPlaying = false;
-      waveform.classList.remove('playing');
-      setIcon(false);
-      audio.pause();
-      clearInterval(interval);
-    }
-    function resetPlayer() {
-      pausePlayer();
-      progress.style.width = '0%';
-      elapsed.textContent  = '0:00';
-    }
+      durationEl.textContent = fmt(audio.duration);
 
-    progressWrap.addEventListener('click', function(e) {
-      if (!audio.duration) return;
-      const pct = Math.max(0, Math.min(1, (e.clientX - this.getBoundingClientRect().left) / this.offsetWidth));
-      audio.currentTime    = pct * audio.duration;
-      progress.style.width = (pct*100) + '%';
-      elapsed.textContent  = fmt(audio.currentTime);
     });
 
+    function togglePlay(){
 
-    /* ── SCANNER ── */
-    const scannerOverlay = document.getElementById('scanner');
-    const scanBtn = document.getElementById('scanBtn');
-    const closeBtn = document.getElementById('closeBtn');
+      if(!isPlaying){
+
+        isPlaying = true;
+
+        waveform.classList.add('playing');
+
+        setIcon(true);
+
+        audio.play().catch(()=>{});
+
+        interval = setInterval(() => {
+
+          if(audio.duration){
+
+            progress.style.width =
+            (audio.currentTime / audio.duration * 100)
+            + '%';
+
+            elapsed.textContent =
+            fmt(audio.currentTime);
+
+          }
+
+        },200);
+
+      } else {
+
+        pausePlayer();
+
+      }
+
+    }
+
+    function pausePlayer(){
+
+      isPlaying = false;
+
+      waveform.classList.remove('playing');
+
+      setIcon(false);
+
+      audio.pause();
+
+      clearInterval(interval);
+
+    }
+
+    progressWrap.addEventListener('click', function(e){
+
+      if(!audio.duration) return;
+
+      const pct =
+      Math.max(
+        0,
+        Math.min(
+          1,
+          (e.clientX - this.getBoundingClientRect().left)
+          / this.offsetWidth
+        )
+      );
+
+      audio.currentTime = pct * audio.duration;
+
+      progress.style.width = (pct*100) + '%';
+
+      elapsed.textContent =
+      fmt(audio.currentTime);
+
+    });
+
+    /* SCANNER */
+
+    const scannerOverlay =
+    document.getElementById('scanner');
+
+    const scanBtn =
+    document.getElementById('scanBtn');
+
+    const closeBtn =
+    document.getElementById('closeBtn');
+
     let html5QrCode = null;
 
     scanBtn.addEventListener('click', () => {
+
       scannerOverlay.classList.add('open');
-      if (!html5QrCode) {
-        html5QrCode = new Html5Qrcode("qr-reader");
+
+      if (typeof Html5Qrcode === 'undefined') {
+        document.getElementById('scanHint').textContent = 'Scanner failed to load (CDN blocked).';
+        return;
       }
-      document.getElementById('scanHint').textContent = 'Hold steady • Auto-detects QR';
+
+      if(!html5QrCode){
+
+        html5QrCode =
+        new Html5Qrcode("qr-reader");
+
+      }
+
       html5QrCode.start(
-        { facingMode: "environment" },
+
+        { facingMode:"environment" },
+
         {
-          fps: 10,
-          qrbox: { width: 180, height: 180 }
+          fps:10,
+          qrbox:{
+            width:180,
+            height:180
+          }
         },
+
         qrCodeMessage => {
-          document.getElementById('scanHint').textContent = 'QR detected! Redirecting...';
-          html5QrCode.stop().then(() => {
-            window.location.href = qrCodeMessage;
-          });
-        },
-        errorMessage => {
-          // Optionally show scanning errors
+
+          window.location.href =
+          qrCodeMessage;
+
         }
-      ).catch(err => {
-        document.getElementById('scanHint').textContent = 'Camera error: ' + err;
-      });
+
+      );
+
     });
 
     closeBtn.addEventListener('click', () => {
+
       scannerOverlay.classList.remove('open');
-      if (html5QrCode) {
+
+      if(html5QrCode){
+
         html5QrCode.stop().catch(()=>{});
+
       }
+
     });
 
   </script>
+
 </body>
 </html>

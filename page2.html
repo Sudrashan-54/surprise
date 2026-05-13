@@ -474,11 +474,7 @@
 
       <!-- Hidden audio element -->
       <audio id="audio">
-<<<<<<< HEAD
         <source src="./songs/maruvarthai.mpeg" type="audio/mp3">
-=======
-        <source src="songs/maruvarthai.mpeg" type="audio/mp3">
->>>>>>> aea64a2c63b82570e18e0921952f6d4d2c8a30ee
       </audio>
 
       <!-- Progress bar -->
@@ -528,18 +524,11 @@
         <div class="scan-inner">
           <div class="scan-grid"></div>
           <div class="scan-line"></div>
-<<<<<<< HEAD
           <div id="qr-reader" style="width: 210px; height: 210px; margin: 0 auto;"></div>
         </div>
       </div>
 
       <div class="scan-hint" id="scanHint">Hold steady · Auto-detects QR</div>
-=======
-        </div>
-      </div>
-
-      <div class="scan-hint">Hold steady · Auto-detects lyrics</div>
->>>>>>> aea64a2c63b82570e18e0921952f6d4d2c8a30ee
 
       <button class="close-btn" id="closeBtn">Done</button>
 
@@ -547,11 +536,8 @@
 
   </div>
 
-<<<<<<< HEAD
   <!-- html5-qrcode CDN -->
-  <script src="https://unpkg.com/html5-qrcode@2.3.10/html5-qrcode.min.js"></script>
-=======
->>>>>>> aea64a2c63b82570e18e0921952f6d4d2c8a30ee
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.10/html5-qrcode.min.js"></script>
   <script>
     let isPlaying = false;
     let interval  = null;
@@ -628,7 +614,6 @@
       elapsed.textContent  = fmt(audio.currentTime);
     });
 
-<<<<<<< HEAD
     // QR Scanner integration
     const scannerOverlay = document.getElementById('scanner');
     const scanBtn = document.getElementById('scanBtn');
@@ -637,6 +622,10 @@
 
     scanBtn.addEventListener('click', () => {
       scannerOverlay.classList.add('open');
+      if (typeof Html5Qrcode === 'undefined') {
+        document.getElementById('scanHint').textContent = 'Scanner failed to load (CDN blocked).';
+        return;
+      }
       if (!html5QrCode) {
         html5QrCode = new Html5Qrcode("qr-reader");
       }
@@ -664,14 +653,6 @@
       if (html5QrCode) {
         html5QrCode.stop().catch(() => {});
       }
-=======
-    document.getElementById('scanBtn').addEventListener('click', () => {
-      document.getElementById('scanner').classList.add('open');
-    });
-
-    document.getElementById('closeBtn').addEventListener('click', () => {
-      document.getElementById('scanner').classList.remove('open');
->>>>>>> aea64a2c63b82570e18e0921952f6d4d2c8a30ee
     });
   </script>
 
