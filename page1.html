@@ -476,7 +476,11 @@
 
       <!-- Hidden audio -->
       <audio id="audio">
+<<<<<<< HEAD
         <source src="./songs/isaiyal oru ulagam.mpeg" type="audio/mp3">
+=======
+        <source src="songs/isaiyal oru ulagam.mp3" type="audio/mp3">
+>>>>>>> aea64a2c63b82570e18e0921952f6d4d2c8a30ee
       </audio>
 
       <!-- Progress bar -->
@@ -522,17 +526,28 @@
         <span class="corner bl"></span>
         <span class="corner br"></span>
         <div class="scan-inner">
+<<<<<<< HEAD
           <div id="qr-reader" style="width: 210px; height: 210px; margin: 0 auto;"></div>
         </div>
       </div>
       <div class="scan-hint" id="scanHint">Hold steady · Auto-detects QR</div>
+=======
+          <div class="scan-grid"></div>
+          <div class="scan-line"></div>
+        </div>
+      </div>
+      <div class="scan-hint">Hold steady · Auto-detects lyrics</div>
+>>>>>>> aea64a2c63b82570e18e0921952f6d4d2c8a30ee
       <button class="close-btn" id="closeBtn">Done</button>
     </div>
 
   </div>
 
+<<<<<<< HEAD
   <!-- html5-qrcode CDN -->
   <script src="https://unpkg.com/html5-qrcode@2.3.10/html5-qrcode.min.js"></script>
+=======
+>>>>>>> aea64a2c63b82570e18e0921952f6d4d2c8a30ee
   <script>
     let isPlaying = false;
     let interval  = null;
@@ -603,6 +618,7 @@
       elapsedEl.textContent  = fmt(audio.currentTime);
     });
 
+<<<<<<< HEAD
     // QR Scanner integration
     const scannerOverlay = document.getElementById('scanner');
     const scanBtn = document.getElementById('scanBtn');
@@ -640,6 +656,13 @@
       if (html5QrCode) {
         html5QrCode.stop().catch(()=>{});
       }
+=======
+    document.getElementById('scanBtn').addEventListener('click', () => {
+      document.getElementById('scanner').classList.add('open');
+    });
+    document.getElementById('closeBtn').addEventListener('click', () => {
+      document.getElementById('scanner').classList.remove('open');
+>>>>>>> aea64a2c63b82570e18e0921952f6d4d2c8a30ee
     });
   </script>
 
