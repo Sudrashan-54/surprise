@@ -55,11 +55,8 @@
     .top-badge{
       background:linear-gradient(135deg,#b80c09,#8d0801);
       color:#fff;
-
       padding:8px 18px;
-
       border-radius:999px;
-
       font-size:14px;
       font-weight:500;
 
@@ -86,11 +83,9 @@
         );
 
       border-radius:34px;
-
       padding:42px 28px 34px;
 
       position:relative;
-
       overflow:hidden;
 
       margin-bottom:24px;
@@ -102,7 +97,6 @@
 
     .lyrics-quote{
       position:absolute;
-
       top:12px;
       left:20px;
 
@@ -330,7 +324,11 @@
       letter-spacing:.08em;
     }
 
-    /* SCAN */
+    /* SCAN SECTION */
+
+    .scan-section{
+      margin-top:4px;
+    }
 
     .scan-label{
       display:flex;
@@ -393,7 +391,7 @@
       height:28px;
     }
 
-    /* OVERLAY */
+    /* SCANNER OVERLAY */
 
     .scanner-overlay{
       position:absolute;
@@ -651,6 +649,85 @@
 
     </div>
 
+    <!-- SCAN SECTION -->
+
+    <div class="scan-section">
+
+      <div class="scan-label">
+
+        <svg viewBox="0 0 24 24"
+          fill="none"
+          stroke="#8a8746"
+          stroke-width="2"
+          stroke-linecap="round">
+
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+
+        </svg>
+
+        Scan the next paper to continue
+
+      </div>
+
+      <button class="scan-btn" id="scanBtn">
+
+        <svg viewBox="0 0 24 24"
+          fill="none"
+          stroke="#696515"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round">
+
+          <path d="M3 7V5a2 2 0 012-2h2M17 3h2a2 2 0 012 2v2M21 17v2a2 2 0 01-2 2h-2M7 21H5a2 2 0 01-2-2v-2"/>
+
+          <line x1="7" y1="12" x2="17" y2="12"/>
+
+        </svg>
+
+        Scan next page
+
+      </button>
+
+    </div>
+
+    <!-- SCANNER OVERLAY -->
+
+    <div class="scanner-overlay" id="scanner">
+
+      <div class="scan-overlay-title">
+        ALIGN PAPER WITHIN FRAME
+      </div>
+
+      <div class="scanner-box">
+
+        <span class="corner tl"></span>
+        <span class="corner tr"></span>
+        <span class="corner bl"></span>
+        <span class="corner br"></span>
+
+        <div class="scan-inner">
+
+          <div class="scan-grid"></div>
+
+          <div class="scan-line"></div>
+
+        </div>
+
+      </div>
+
+      <div class="scan-hint">
+        Hold steady • Auto-detects lyrics
+      </div>
+
+      <button class="close-btn"
+        id="closeBtn">
+
+        Done
+
+      </button>
+
+    </div>
+
   </div>
 
   <script>
@@ -778,6 +855,24 @@
       progress.style.width = (pct * 100) + '%';
 
       elapsed.textContent = fmt(audio.currentTime);
+
+    });
+
+    // SCANNER
+
+    document.getElementById('scanBtn')
+    .addEventListener('click', () => {
+
+      document.getElementById('scanner')
+      .classList.add('open');
+
+    });
+
+    document.getElementById('closeBtn')
+    .addEventListener('click', () => {
+
+      document.getElementById('scanner')
+      .classList.remove('open');
 
     });
 
